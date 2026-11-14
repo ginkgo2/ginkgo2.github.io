@@ -3,222 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>连通性测试 · 感官友好评估网站</title>
-<style>
-  :root{
-    --ink:#1b1b1b; --muted:#5b5b5b; --line:#d8d8d8;
-    --bg:#fbfaf8; --card:#fff; --ok:#1f7a4d; --bad:#a8322a; --warn:#8a6a00;
-  }
-  *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
-  body{
-    margin:0; padding:28px 20px 60px; background:var(--bg); color:var(--ink);
-    font:17px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  }
-  main{max-width:720px;margin:0 auto}
-  .kicker{margin:0 0 8px;font-size:14px;letter-spacing:.04em;color:var(--muted)}
-  h1{margin:0 0 14px;font-size:clamp(22px,5.2vw,30px);line-height:1.35;font-weight:700}
-  .lead{margin:0 0 26px;color:var(--muted);font-size:16px}
-  .verdict{
-    display:block;padding:18px 18px;border-radius:10px;border:2px solid var(--line);
-    background:var(--card);font-size:18px;font-weight:600;margin:0 0 22px;
-  }
-  .verdict.ok{border-color:var(--ok);color:var(--ok)}
-  .verdict.bad{border-color:var(--bad);color:var(--bad)}
-  .verdict.run{border-color:var(--warn);color:var(--warn)}
-  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
-  tr:last-child th,tr:last-child td{border-bottom:0}
-  th{width:34%;color:var(--muted);font-weight:500;white-space:nowrap}
-  td{font-variant-numeric:tabular-nums;word-break:break-word}
-  .bar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 8px}
-  button{
-    font:inherit;font-weight:600;padding:12px 20px;border-radius:8px;cursor:pointer;
-    border:1.5px solid var(--ink);background:var(--ink);color:#fff;
-  }
-  button.ghost{background:transparent;color:var(--ink)}
-  button:focus-visible{outline:3px solid #2b6cb0;outline-offset:2px}
-  .note{margin:22px 0 0;font-size:14px;color:var(--muted)}
-  .note b{color:var(--ink)}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
-</style>
+<title>感官友好 · 海港区公共环境评估</title>
+<meta name="description" content="六项观察、四档定级，写清楚哪个时段去、从哪个门进、要不要带耳罩。">
+<link rel="stylesheet" href="./assets/css/site.css">
 </head>
-<body>
-<main>
-  <p class="kicker">部署连通性测试 · 这不是正式站点</p>
-  <h1>能看到这一页，说明这个网络能打开 pages.dev</h1>
-  <p class="lead">请截图，并注明：什么网络（教室 Wi-Fi / 移动 / 联通 / 电信）、什么设备、在哪。</p>
+<body data-page="index">
 
-  <p class="verdict run" id="verdict">正在测……</p>
+<a class="skip" href="#main">跳到正文</a>
 
-  <table>
-    <tbody>
-      <tr><th>打开时间</th><td id="v-now">—</td></tr>
-      <tr><th>设备</th><td id="v-ua">—</td></tr>
-      <tr><th>屏幕</th><td id="v-screen">—</td></tr>
-      <tr><th>时区</th><td id="v-tz">—</td></tr>
-      <tr><th>首字节</th><td id="v-ttfb">—</td></tr>
-      <tr><th>5 次回源</th><td id="v-ping">—</td></tr>
-    </tbody>
-  </table>
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="./index.html">感官友好</a>
+    <nav class="nav" id="nav" aria-label="主导航"></nav>
+  </div>
+</header>
 
-  <div class="bar">
-    <button id="again" type="button">再测一次</button>
-    <button id="copy" class="ghost" type="button">复制结果</button>
+<main id="main" class="wrap">
+
+  <section class="hero">
+    <h1>一个地方进去以后，会怎么样</h1>
+    <p class="lead">六项观察，四档定级。写清楚哪个时段去、从哪个门进、要不要带耳罩。</p>
+  </section>
+
+  <ul class="stats" id="stats" hidden></ul>
+
+  <div class="entry">
+    <a href="./list.html">
+      <span class="entry-title">清单</span>
+      <span class="entry-sub">测过的点位，按类型和等级筛</span>
+    </a>
+    <a href="./map.html">
+      <span class="entry-title">地图</span>
+      <span class="entry-sub">哪些评过，哪片还空着</span>
+    </a>
   </div>
 
-  <p class="note">
-    回源测的是对同目录 <span class="mono">ping.txt</span> 的五次请求：全成功说明不是"刚好刷出来一次"。
-    <b>预期结果</b>：能打开、五次全成功、首字节几百毫秒内。若出现超时、证书错误或白页，正好说明这套托管需要换。
-  </p>
+  <h2>六项</h2>
+  <ul class="dims">
+    <li><a href="./method.html#dim-noise">噪声</a></li>
+    <li><a href="./method.html#dim-surprise">突发声</a></li>
+    <li><a href="./method.html#dim-light">光环境与视觉杂乱</a></li>
+    <li><a href="./method.html#dim-crowd">人流拥挤</a></li>
+    <li><a href="./method.html#dim-quiet">安静空间</a></li>
+    <li><a href="./method.html#dim-smell">气味</a></li>
+  </ul>
+
 </main>
 
+<footer class="site-foot">
+  <div class="wrap" id="foot"></div>
+</footer>
+
+<script src="./data/points.js"></script>
+<script src="./assets/js/core.js"></script>
 <script>
 (function () {
-  var $ = function (id) { return document.getElementById(id); };
-  var verdict = $('verdict');
-  var state = { ping: null };
+  var list = window.SF.points();
+  if (!list.length) return;
 
-  function fmtTime(d) {
-    var p = function (n) { return String(n).padStart(2, '0'); };
-    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
-           p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
-  }
+  var verified = list.filter(function (p) { return p.status === 'verified'; });
+  var rec = verified.filter(function (p) { return p.level === 'recommended'; }).length;
+  var cond = verified.filter(function (p) { return p.level === 'conditional'; }).length;
 
-  function deviceLabel() {
-    var ua = navigator.userAgent;
-    var os = '未知系统';
-    if (/iPhone|iPad|iPod/.test(ua)) os = /iPad/.test(ua) ? 'iPad' : 'iPhone';
-    else if (/Android/.test(ua)) os = 'Android';
-    else if (/Windows/.test(ua)) os = 'Windows';
-    else if (/Mac OS X/.test(ua)) os = 'macOS';
-    var br = '未知浏览器';
-    if (/MicroMessenger/i.test(ua)) br = '微信内置浏览器';
-    else if (/Edg\//.test(ua)) br = 'Edge';
-    else if (/Chrome\//.test(ua) && !/OPR\//.test(ua)) br = 'Chrome';
-    else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) br = 'Safari';
-    else if (/Firefox\//.test(ua)) br = 'Firefox';
-    return os + ' / ' + br;
-  }
-
-  function measureNav() {
-    try {
-      var nav = performance.getEntriesByType('navigation')[0];
-      if (nav) {
-        var ttfb = Math.round(nav.responseStart);
-        $('v-ttfb').textContent = ttfb + ' ms' + (ttfb > 1200 ? '（偏慢）' : '');
-        return ttfb;
-      }
-    } catch (e) {}
-    $('v-ttfb').textContent = '浏览器不支持测量';
-    return null;
-  }
-
-  function pingOnce(i) {
-    var url = 'ping.txt?_=' + Date.now() + '-' + i;
-    var t0 = performance.now();
-    return fetch(url, { cache: 'no-store' })
-      .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.text();
-      })
-      .then(function () { return { ok: true, ms: Math.round(performance.now() - t0) }; })
-      .catch(function () { return { ok: false, ms: Math.round(performance.now() - t0) }; });
-  }
-
-  function runPing() {
-    $('v-ping').textContent = '测试中……';
-    var out = [];
-    var chain = Promise.resolve();
-    for (var i = 1; i <= 5; i++) {
-      (function (n) {
-        chain = chain.then(function () {
-          return pingOnce(n).then(function (r) { out.push(r); });
-        });
-      })(i);
-    }
-    return chain.then(function () {
-      var okList = out.filter(function (r) { return r.ok; }).map(function (r) { return r.ms; });
-      var fail = out.length - okList.length;
-      okList.sort(function (a, b) { return a - b; });
-      var min = okList[0], max = okList[okList.length - 1];
-      var med = okList.length ? okList[Math.floor((okList.length - 1) / 2)] : null;
-      var text = okList.length + '/5 成功';
-      if (okList.length) text += '｜最快 ' + min + ' ms｜中位 ' + med + ' ms｜最慢 ' + max + ' ms';
-      if (fail) text += '｜失败 ' + fail + ' 次';
-      $('v-ping').textContent = text;
-      state.ping = { ok: okList.length, fail: fail, min: min, med: med, max: max };
-      return state.ping;
-    });
-  }
-
-  function summarize() {
-    return [
-      '【连通性测试结果】',
-      '时间：' + $('v-now').textContent,
-      '设备：' + $('v-ua').textContent,
-      '屏幕：' + $('v-screen').textContent,
-      '时区：' + $('v-tz').textContent,
-      '首字节：' + $('v-ttfb').textContent,
-      '回源：' + $('v-ping').textContent,
-      '地址：' + location.host + location.pathname
-    ].join('\n');
-  }
-
-  function verdictText() {
-    var p = state.ping;
-    if (!p) return null;
-    if (p.ok === 5) {
-      verdict.className = 'verdict ok';
-      return '这个网络可以稳定打开（5/5 成功）。';
-    }
-    if (p.ok >= 3) {
-      verdict.className = 'verdict run';
-      return '能打开，但不稳定（' + p.ok + '/5 成功）。换网络再测一次。';
-    }
-    verdict.className = 'verdict bad';
-    return '打不开或大量超时（' + p.ok + '/5 成功）。这个网络不能用这套托管。';
-  }
-
-  function fill() {
-    $('v-now').textContent = fmtTime(new Date());
-    $('v-ua').textContent = deviceLabel();
-    $('v-screen').textContent = window.screen.width + '×' + window.screen.height +
-      '（视口 ' + window.innerWidth + '×' + window.innerHeight + '，像素比 ' +
-      (window.devicePixelRatio || 1).toFixed(1) + '）';
-    $('v-tz').textContent = (Intl.DateTimeFormat().resolvedOptions().timeZone || '未知') +
-      '（UTC' + (new Date().getTimezoneOffset() > 0 ? '-' : '+') +
-      Math.abs(new Date().getTimezoneOffset() / 60) + '）';
-  }
-
-  function measureAll() {
-    fill();
-    measureNav();
-    verdict.className = 'verdict run';
-    verdict.textContent = '正在测回源……';
-    runPing().then(function () {
-      verdict.textContent = verdictText();
-    });
-  }
-
-  $('again').addEventListener('click', measureAll);
-
-  $('copy').addEventListener('click', function () {
-    var text = summarize();
-    var done = function () {
-      $('copy').textContent = '已复制';
-      setTimeout(function () { $('copy').textContent = '复制结果'; }, 1600);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, function () { window.prompt('复制这段：', text); });
-    } else {
-      window.prompt('复制这段：', text);
-    }
-  });
-
-  measureAll();
+  var stats = document.getElementById('stats');
+  stats.innerHTML =
+    '<li><span class="num">' + verified.length + '</span><span class="lab">已核验点位</span></li>' +
+    '<li><span class="num">' + rec + '</span><span class="lab">推荐</span></li>' +
+    '<li><span class="num">' + cond + '</span><span class="lab">有条件推荐</span></li>';
+  stats.hidden = false;
 })();
 </script>
+
 </body>
 </html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>评估 · 感官友好</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+</head>
+<body data-page="assess">
+
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="./index.html">感官友好</a>
+    <nav class="nav" id="nav" aria-label="主导航"></nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <header class="page-head">
+    <h1>评估</h1>
+    <p class="lead">六项各选一个分数，没测的留空，填完直接出等级。</p>
+  </header>
+
+  <form id="form" novalidate>
+
+    <section class="card">
+      <h2>点位</h2>
+      <div class="grid-2">
+        <label class="field">
+          <span>编号</span>
+          <input name="id" placeholder="HGG-01" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>名称</span>
+          <input name="name" placeholder="某社区卫生服务中心" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>环境类型</span>
+          <select name="envType" id="envType"></select>
+        </label>
+        <label class="field">
+          <span>场景包</span>
+          <select name="scenario" id="scenario"></select>
+        </label>
+        <label class="field">
+          <span>观察时间</span>
+          <input type="datetime-local" name="observedAt">
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>六项</h2>
+      <p class="hint">每个选项都是判定标准本身。不确定就留空，留空不会当成 0 分。</p>
+      <div id="dims"></div>
+    </section>
+
+    <section class="card">
+      <h2>等级</h2>
+      <div class="result" id="result" aria-live="polite">
+        <span class="badge badge-none"><span class="glyph" aria-hidden="true">○</span>暂无数据</span>
+        <span class="result-text">还没填。</span>
+      </div>
+      <label class="field" style="margin-top:18px">
+        <span>一句建议</span>
+        <input name="note" placeholder="避开 11:30—12:30，从东门进" autocomplete="off">
+      </label>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn" id="export">导出 JSON</button>
+      <button type="button" class="btn btn-ghost" id="save">保存草稿</button>
+      <button type="button" class="btn btn-ghost" id="clear">清空</button>
+    </div>
+
+  </form>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap" id="foot"></div>
+</footer>
+
+<script src="./data/points.js"></script>
+<script src="./assets/js/core.js"></script>
+<script src="./assets/js/assess.js"></script>
+
+</body>
+</html>

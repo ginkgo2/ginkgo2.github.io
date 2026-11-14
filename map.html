@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地图 · 感官友好</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+</head>
+<body data-page="map">
+
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="./index.html">感官友好</a>
+    <nav class="nav" id="nav" aria-label="主导航"></nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <header class="page-head">
+    <h1>地图</h1>
+    <p class="lead">浅色是待核验，深色是评过的。点开看卡片。</p>
+  </header>
+
+  <div class="map-shell">
+    <svg viewBox="0 0 1000 620" role="img" aria-label="海港区示意底图">
+      <defs>
+        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="var(--line)" stroke-width="1"></path>
+        </pattern>
+      </defs>
+      <rect width="1000" height="620" fill="var(--surface-2)"></rect>
+      <rect width="1000" height="620" fill="url(#grid)"></rect>
+      <g id="pins"></g>
+    </svg>
+  </div>
+
+  <ul class="legend">
+    <li><span class="mark none" aria-hidden="true">○</span>待核验</li>
+    <li><span class="mark ok" aria-hidden="true">●</span>推荐</li>
+    <li><span class="mark warn" aria-hidden="true">▲</span>有条件推荐</li>
+  </ul>
+
+  <p class="hint" id="count">还没有点位。</p>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap" id="foot"></div>
+</footer>
+
+<script src="./data/points.js"></script>
+<script src="./assets/js/core.js"></script>
+<script>
+(function () {
+  var data = window.SF.points();
+  var pins = document.getElementById('pins');
+  var count = document.getElementById('count');
+
+  if (!data.length) return;
+
+  count.textContent = '已标注 ' + data.length + ' 个点位。';
+
+  var marks = {
+    recommended: { glyph: '●', color: 'var(--ok)' },
+    conditional: { glyph: '▲', color: 'var(--warn)' },
+    not_recommended: { glyph: '■', color: 'var(--bad)' }
+  };
+
+  data.forEach(function (p) {
+    var m = marks[p.level];
+    var x = Number(p.x), y = Number(p.y);
+    if (!m || !isFinite(x) || !isFinite(y)) return;
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'button');
+    g.setAttribute('aria-label', p.name + '，' + (window.SF.LEVELS[p.level].label));
+    g.innerHTML = '<text x="' + x + '" y="' + y + '" font-size="22" text-anchor="middle" ' +
+      'dominant-baseline="central" fill="' + m.color + '">' + m.glyph + '</text>';
+    g.addEventListener('click', function () { alert(p.name + '\n' + p.note); });
+    pins.appendChild(g);
+  });
+})();
+</script>
+
+</body>
+</html>

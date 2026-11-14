@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方法 · 感官友好</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+</head>
+<body data-page="method">
+
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="./index.html">感官友好</a>
+    <nav class="nav" id="nav" aria-label="主导航"></nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <header class="page-head">
+    <h1>方法</h1>
+    <p class="lead">每项怎么判、怎么定级、做不到什么。</p>
+  </header>
+
+  <h2>六项与判定</h2>
+  <p class="hint">1—5 分，5 分最友好。打分时只想一件事：这一项在这十几分钟里，会不会让一个敏感的孩子难受。</p>
+  <div id="dims"></div>
+
+  <h2>定级</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>等级</th><th>规则</th><th>卡片上写什么</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge badge-ok"><span class="glyph" aria-hidden="true">●</span>推荐</span></td><td>六项全部 ≥4</td><td>可放心前往</td></tr>
+        <tr><td><span class="badge badge-warn"><span class="glyph" aria-hidden="true">▲</span>有条件推荐</span></td><td>最低的一项是 3 分</td><td>避开某个时段、从某个门进、自带耳罩</td></tr>
+        <tr><td><span class="badge badge-bad"><span class="glyph" aria-hidden="true">■</span>不推荐</span></td><td>任何一项 ≤2</td><td>不建议长时间停留</td></tr>
+        <tr><td><span class="badge badge-none"><span class="glyph" aria-hidden="true">○</span>暂无数据</span></td><td>缺两项以上</td><td>未评估</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p>不求和、不加权。规则摆在这里，谁都能重算一遍。</p>
+    <p>判定顺序是固定的：先看缺失，缺两项以上直接记"暂无数据"；再看有没有 ≤2 的项；最后才看是不是全部 ≥4。只缺一项时按其余项定级，卡片上注明缺了哪项。</p>
+  </div>
+
+  <h2>依据</h2>
+  <div class="prose">
+    <p>指标框架映射自 BSI PAS 6463:2022 的感官设计条目结构，只做映射，不复制条文。条目组织参考 PSEQ 的做法。</p>
+    <p>国内依据三条：《中华人民共和国无障碍环境建设法》（2023-09-01 施行）把无障碍从设施扩展到信息与社会服务；GB 50763《无障碍设计规范》管的是物理通行，不含感官维度；国家卫健委《0—6 岁儿童孤独症筛查干预服务规范（试行）》（2022）说明筛查与家庭支持是政策方向。</p>
+    <p>DSM-5 只用来证明感官敏感是这类人群的定义性特征之一，它不是场所标准。判定场所的阈值是我们自己写死的操作化定义，不是医学标准——所以叫筛查，不叫诊断。</p>
+  </div>
+
+  <h2 id="boundary">边界</h2>
+  <div class="prose">
+    <p>它是筛查工具，不是诊断，也不是声级计。只描述感官负荷，不评价场所好坏。</p>
+    <p>一次观察是快照，不覆盖天气、活动和节假日的差异。样本小，只做描述，不做推断。</p>
+    <p>公开版只展示"推荐"和"有条件推荐"。"不推荐"只在报告里以编号出现，不给真实场所点名差评。</p>
+    <p>不录对话，不拍人脸，数据存在本地。</p>
+  </div>
+
+  <h2>术语</h2>
+  <div class="prose">
+    <p><strong>孤独症（自闭症）</strong>：正式文本用这个写法，不用"自闭症孩子"。对比群体写"普通人群"。</p>
+    <p><strong>感官过载</strong>：声音、光线、人流、气味同时或持续超出可承受范围，导致回避、哭闹或僵住。</p>
+    <p><strong>短板定级</strong>：不看平均分，看最差的那一项。对一个怕吵的孩子来说，一项 2 分就足以让整个地方去不了。</p>
+  </div>
+
+  <h2 id="a11y">无障碍</h2>
+  <div class="prose">
+    <p>本站在自己的界面上遵守同一套原则：没有自动播放，没有闪烁动画，动效不超过 200 毫秒，并且尊重系统的"减少动态"设置。</p>
+    <p>等级用颜色、形状和文字三重编码，不看颜色也能读。正文字号可在页脚切换小、中、大三档。全键盘可达，焦点框始终可见。</p>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap" id="foot"></div>
+</footer>
+
+<script src="./data/points.js"></script>
+<script src="./assets/js/core.js"></script>
+<script>
+(function () {
+  var host = document.getElementById('dims');
+  host.innerHTML = window.SF.DIMS.map(function (d) {
+    var rows = [5, 4, 3, 2, 1].map(function (n) {
+      return '<li><span class="n">' + n + '</span><span class="t">' + window.SF.esc(d.anchors[n]) + '</span></li>';
+    }).join('');
+    return '<section class="card" id="dim-' + d.id + '">' +
+      '<h3>' + window.SF.esc(d.name) + '</h3>' +
+      '<p class="hint">' + window.SF.esc(d.hint) + '</p>' +
+      '<ol class="anchor-list" aria-label="' + window.SF.esc(d.name) + '的 1 到 5 分">' + rows + '</ol>' +
+      '</section>';
+  }).join('');
+})();
+</script>
+
+</body>
+</html>

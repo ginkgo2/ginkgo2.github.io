@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据 · 感官友好</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+</head>
+<body data-page="data">
+
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="./index.html">感官友好</a>
+    <nav class="nav" id="nav" aria-label="主导航"></nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <header class="page-head">
+    <h1>数据</h1>
+    <p class="lead">点位数据、字段和许可。</p>
+  </header>
+
+  <h2>下载</h2>
+  <div class="empty">还没有可下载的数据。</div>
+
+  <h2>字段</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>字段</th><th>含义</th><th>取值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>点位编号</td><td>HGG-01 起</td></tr>
+        <tr><td><code>name</code></td><td>显示名</td><td>可脱敏，如"某社区卫生服务中心"</td></tr>
+        <tr><td><code>envType</code></td><td>环境类型</td><td><code>path</code> 通行路径、<code>daily</code> 日常必需、<code>public</code> 公共空间、<code>venue</code> 大型场馆</td></tr>
+        <tr><td><code>scenario</code></td><td>场景包</td><td><code>indoor</code> 城市室内、<code>outdoor</code> 城市室外、<code>nature</code> 自然户外</td></tr>
+        <tr><td><code>x</code> / <code>y</code></td><td>底图上的像素坐标</td><td>整数</td></tr>
+        <tr><td><code>observedAt</code></td><td>观察时间</td><td>ISO 8601，带时区</td></tr>
+        <tr><td><code>scores</code></td><td>六项分数</td><td>1—5，缺项不写</td></tr>
+        <tr><td><code>level</code></td><td>等级</td><td><code>recommended</code>、<code>conditional</code>、<code>not_recommended</code>、<code>no_data</code></td></tr>
+        <tr><td><code>note</code></td><td>一句建议</td><td>四十字以内</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>许可</h2>
+  <div class="prose">
+    <p>数据按 CC BY 4.0 发布，代码按 MIT 发布。</p>
+    <p>最后更新：—</p>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap" id="foot"></div>
+</footer>
+
+<script src="./data/points.js"></script>
+<script src="./assets/js/core.js"></script>
+
+</body>
+</html>
