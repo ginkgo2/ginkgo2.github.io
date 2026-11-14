@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>工具箱 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611141352">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611141423">
 </head>
 <body data-page="tools">
 
@@ -12,15 +12,15 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611141352">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611141423">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611141352">清单</a>
-    <a href="./map.html?v=202611141352">地图</a>
-    <a href="./tools.html?v=202611141352" aria-current="page">工具箱</a>
-    <a href="./assess.html?v=202611141352">评估</a>
-    <a href="./method.html?v=202611141352">方法</a>
-    <a href="./data.html?v=202611141352">数据</a>
-  </nav>
+      <a href="./list.html?v=202611141423">清单</a>
+      <a href="./map.html?v=202611141423">地图</a>
+      <a href="./tools.html?v=202611141423" aria-current="page">工具箱</a>
+      <a href="./assess.html?v=202611141423">评估</a>
+      <a href="./method.html?v=202611141423">方法</a>
+      <a href="./data.html?v=202611141423">数据</a>
+    </nav>
   </div>
 </header>
 
@@ -32,8 +32,23 @@
   </header>
 
   <section class="card">
+    <h2>当前点位</h2>
+    <p class="hint">测量的数据挂在这个编号上。换编号或开新会话都会清空当前测量，评估页只认同编号的数据。</p>
+    <div class="grid-2" style="margin-top:14px">
+      <label class="field">
+        <span>点位编号</span>
+        <input id="sess-id" placeholder="HGG-01" autocomplete="off">
+      </label>
+      <div style="align-self:end">
+        <button class="btn btn-ghost" type="button" id="sess-new">开新会话</button>
+      </div>
+    </div>
+    <p class="hint" id="sess-msg"></p>
+  </section>
+
+  <section class="card">
     <h2>分贝计 <span class="hint">→ 噪声</span></h2>
-    <p class="hint">30 秒采音，125 毫秒窗，报指示值和峰值。不是声级计，不做 A 计权，同一批数据固定用一台手机。</p>
+    <p class="hint">30 秒采音，125 毫秒窗，报指示值和峰值。指示值不是声压级，只作同一台手机的前后参考，判定看能不能交谈。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="db-start">开始 30 秒</button>
       <span class="timer" id="db-timer">00:30</span>
@@ -48,11 +63,12 @@
 
   <section class="card">
     <h2>十分钟观察 <span class="hint">→ 突发声</span></h2>
-    <p class="hint">按下开始，站定十分钟。每出现一次预料不到的声音就点一下，顺手选类型和能不能预料。</p>
+    <p class="hint">每个 10 分钟窗单独记。站定十分钟，每出现一次预料不到的声音就点一下。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="ob-start">开始 10 分钟</button>
       <span class="timer" id="ob-timer">10:00</span>
-      <span class="timer">已记 <strong id="ob-count">0</strong> 次</span>
+      <span class="timer" id="ob-window">未开始</span>
+      <span class="timer">本窗 <strong id="ob-count">0</strong> 次 · 累计 <strong id="ob-total">0</strong> 次</span>
       <span class="timer">每分钟 <strong id="ob-rate">—</strong></span>
     </div>
     <div class="grid-2" style="margin-top:14px">
@@ -85,7 +101,7 @@
 
   <section class="card">
     <h2>人流与排队 <span class="hint">→ 人流拥挤</span></h2>
-    <p class="hint">五分钟，过一个人点一下。排队时长和同时停留人数手填。</p>
+    <p class="hint">五分钟，过一个人点一下。提前结束会记成"未满 5 分钟"，不会冒充五分钟人数。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="cw-start">开始 5 分钟</button>
       <span class="timer" id="cw-timer">05:00</span>
@@ -107,7 +123,7 @@
 
   <section class="card">
     <h2>安静空间计时 <span class="hint">→ 安静空间</span></h2>
-    <p class="hint">从站立位置走到能坐下、能关门的地方，按一下开始，到了按结束。</p>
+    <p class="hint">从站立位置走到能坐下、能关门的地方，按一下开始，到了按结束。计时只管时长，能不能坐、有没有标识要一起看。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="qt-btn">开始计时</button>
       <span class="timer" id="qt-time">00:00</span>
@@ -116,26 +132,25 @@
   </section>
 
   <div class="actions">
-    <a class="btn" href="./assess.html?v=202611141352">带着这些去评估</a>
-    <button class="btn btn-ghost" type="button" id="clear-tools">清空测量</button>
+    <a class="btn" href="./assess.html?v=202611141423">带着这些去评估</a>
   </div>
 
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
-  <div class="foot-inner">
-    <span>感官友好评估 · 海港区</span>
-    <span class="foot-note">六项 1—5 分，四档定级</span>
-    <span class="foot-build" id="build"></span>
+    <div class="foot-inner">
+      <span>感官友好评估 · 海港区</span>
+      <span class="foot-note">六项 1—5 分，四档定级</span>
+      <span class="foot-build" id="build"></span>
+    </div>
   </div>
-</div>
 </footer>
 
-<script src="./data/points.js?v=202611141352"></script>
-<script src="./data/build.js?v=202611141352"></script>
-<script src="./assets/js/core.js?v=202611141352"></script>
-<script src="./assets/js/tools.js?v=202611141352"></script>
+<script src="./data/points.js?v=202611141423"></script>
+<script src="./data/build.js?v=202611141423"></script>
+<script src="./assets/js/core.js?v=202611141423"></script>
+<script src="./assets/js/tools.js?v=202611141423"></script>
 
 </body>
 </html>

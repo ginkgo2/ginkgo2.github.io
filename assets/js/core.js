@@ -7,23 +7,23 @@
 
   var DIMS = [
     {
-      id: 'noise', name: '噪声', hint: '30 秒指示值 + 能否交谈',
+      id: 'noise', name: '噪声', hint: '30 秒指示值只作参考，判定看能不能交谈',
       anchors: {
-        5: '≤50 dB，正常交谈',
-        4: '51—55 dB，偶尔需侧耳',
-        3: '56—60 dB，需提高音量',
-        2: '61—70 dB，需凑近说',
-        1: '>70 dB，或必须喊话'
+        5: '正常交谈，不用提高音量（≤50 dB 参考）',
+        4: '偶尔需侧耳（51—55 dB 参考）',
+        3: '需提高音量（56—60 dB 参考）',
+        2: '需凑近说（61—70 dB 参考）',
+        1: '必须喊话（>70 dB 参考）'
       }
     },
     {
-      id: 'surprise', name: '突发声', hint: '三个 10 分钟窗，记次数、来源、是否可预料',
+      id: 'surprise', name: '突发声', hint: '三个 10 分钟窗各记一次，按最差的一窗定分',
       anchors: {
-        5: '0—1 次',
-        4: '2 次',
-        3: '3—5 次',
-        2: '≥6 次，但时间固定、可提前避开',
-        1: '≥6 次且不可预料，或有 1 次全场惊跳'
+        5: '每个窗 0—1 次',
+        4: '每个窗 2 次',
+        3: '每个窗 3—5 次',
+        2: '每个窗 6 次以上，但时间固定、可提前避开',
+        1: '每个窗 6 次以上且不可预料，或有 1 次全场惊跳'
       }
     },
     {
@@ -39,20 +39,20 @@
     {
       id: 'crowd', name: '人流拥挤', hint: '5 分钟过人数 + 排队时长 + 同时停留人数',
       anchors: {
-        5: '<10 人/5 分钟，可保持 1.5 m',
+        5: '少于 10 人/5 分钟，可保持 1.5 m',
         4: '10—25 人，偶需侧身',
-        3: '26—45 人，需侧身，或排队 ≤3 分钟',
-        2: '46—60 人，或排队 3—10 分钟，或同时停留 ≥15 人',
-        1: '>60 人，或持续拥挤，或排队 >10 分钟'
+        3: '26—45 人，需侧身；或排队 3 分钟以内',
+        2: '46—60 人；或排队超过 3 分钟、不超过 10 分钟；或同时停留 15 人以上',
+        1: '超过 60 人；或持续拥挤；或排队超过 10 分钟'
       }
     },
     {
       id: 'quiet', name: '安静空间', hint: '最近能坐、能关门、比较安静的地方，记步行时间',
       anchors: {
         5: '≤3 分钟可达，可坐可关门，有标识',
-        4: '≤5 分钟可达，可坐，比较安静',
-        3: '有，但需消费、需询问或噪声偏高，无标识',
-        2: '有，但 10 分钟以上或条件很差',
+        4: '3—5 分钟可达，可坐，比较安静',
+        3: '5—10 分钟可达；或 3—5 分钟但需消费、需询问、无标识',
+        2: '10 分钟以上；或虽有但不能坐、噪声高',
         1: '没有可用恢复空间'
       }
     },
@@ -90,7 +90,8 @@
 
   /* ---------- 定级 ----------
      先判缺失，再判分数：
-     缺 ≥2 → 暂无数据；任一 ≤2 → 不推荐；全部 ≥4 → 推荐；其余（最低 =3）→ 有条件推荐 */
+     缺 ≥2 → 暂无数据；任一 ≤2 → 不推荐；缺 1 → 有条件推荐（补测前不给推荐）；
+     六项齐全且全部 ≥4 → 推荐；其余（最低 = 3）→ 有条件推荐 */
 
   function level(scores) {
     var values = [];
@@ -101,11 +102,23 @@
       else values.push(Number(v));
     });
 
-    var key;
-    if (values.length <= DIMS.length - 2) key = 'no_data';
-    else if (values.some(function (v) { return v <= 2; })) key = 'not_recommended';
-    else if (values.every(function (v) { return v >= 4; })) key = 'recommended';
-    else key = 'conditional';
+    var key, text;
+    if (values.length <= DIMS.length - 2) {
+      key = 'no_data';
+      text = '缺两项以上，不建议下结论';
+    } else if (values.some(function (v) { return v <= 2; })) {
+      key = 'not_recommended';
+      text = '有项目在 2 分或以下';
+    } else if (missing.length) {
+      key = 'conditional';
+      text = '缺一项，补测前只能按有条件推荐';
+    } else if (values.every(function (v) { return v >= 4; })) {
+      key = 'recommended';
+      text = '六项都在 4 分以上';
+    } else {
+      key = 'conditional';
+      text = '最低的一项是 3 分，要把条件写出来';
+    }
 
     var lv = LEVELS[key];
     return {
@@ -113,7 +126,7 @@
       label: lv.label,
       cls: lv.cls,
       glyph: lv.glyph,
-      text: lv.text,
+      text: text,
       missing: missing,
       partial: missing.length === 1
     };

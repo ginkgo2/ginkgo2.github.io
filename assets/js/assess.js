@@ -119,7 +119,7 @@
     } else if (lv.key === 'no_data') {
       text = '只填了 ' + filled + ' 项，缺两项以上不下结论。';
     } else if (lv.partial) {
-      text = lv.text + '。缺一项：' + lv.missing[0] + ' 未测。';
+      text = lv.text + '（' + lv.missing[0] + ' 未测）。';
     } else {
       text = lv.text + '。';
     }
@@ -135,29 +135,50 @@
     if (e.target.type !== 'radio') return;
     renderResult();
   });
+  form.id.addEventListener('input', renderToolsNote);
 
   /* ---------- 工具箱带入 ---------- */
 
-  function readTools() {
+  function toolsData() {
     var t = SF.store('sf:tools');
     if (!t) return null;
-    var has = t.leq != null || t.count5min != null || t.quietMin != null ||
-      (Array.isArray(t.events) && t.events.length);
+    var has = t.leq != null || t.crowdCount != null || t.quietMin != null ||
+      (Array.isArray(t.windows) && t.windows.length);
     return has ? t : null;
+  }
+
+  // 只有工具箱里记的是同一个点位编号，才允许带进当前评估
+  function importable(pid) {
+    var t = toolsData();
+    if (!t) return { t: null, reason: 'empty' };
+    if (!t.pointId) return { t: null, reason: 'no-point' };
+    if (!pid) return { t: null, reason: 'no-id' };
+    if (t.pointId !== pid) return { t: null, reason: 'mismatch', pointId: t.pointId };
+    return { t: t, reason: 'ok' };
   }
 
   function renderToolsNote() {
     var note = document.getElementById('tools-note');
     if (!note) return;
-    var t = readTools();
-    if (!t) { note.textContent = ''; return; }
 
+    var imp = importable(form.id.value.trim());
+    if (imp.reason === 'empty') { note.textContent = ''; return; }
+    if (imp.reason === 'no-point') { note.textContent = '工具箱还没填点位编号，先回去填一下。'; return; }
+    if (imp.reason === 'no-id') { note.textContent = '填了编号才会带入工具箱的测量值。'; return; }
+    if (imp.reason === 'mismatch') {
+      note.textContent = '工具箱里的测量属于 ' + imp.pointId + '，和当前编号不一致，不会带入。';
+      return;
+    }
+
+    var t = imp.t;
     var parts = [];
-    if (t.leq != null) parts.push('指示值 ' + t.leq);
-    if (t.count5min != null) parts.push('5 分钟 ' + t.count5min + ' 人');
+    if (t.leq != null) parts.push('指示值 ' + t.leq + '（' + (t.noiseSec || 0) + ' 秒）');
+    if (t.crowdCount != null) {
+      parts.push((t.crowdDone ? '5 分钟 ' : '观察 ' + (t.crowdSec || 0) + ' 秒 ') + t.crowdCount + ' 人');
+    }
     if (t.queueMin != null) parts.push('排队 ' + t.queueMin + ' 分钟');
     if (t.quietMin != null) parts.push('安静空间 ' + t.quietMin + ' 分钟');
-    if (Array.isArray(t.events) && t.events.length) parts.push(t.events.length + ' 次事件');
+    if (Array.isArray(t.windows) && t.windows.length) parts.push(t.windows.length + ' 个观察窗');
     note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
   }
 
@@ -170,18 +191,25 @@
       .map(function (d) { return d.id; });
     p.level = SF.level(p.scores).key;
 
-    var t = readTools();
-    if (t) {
+    var imp = importable(p.id);
+    if (imp.t) {
+      var t = imp.t;
       p.measures = {
         leq: t.leq == null ? null : t.leq,
         lmax: t.lmax == null ? null : t.lmax,
-        count5min: t.count5min == null ? null : t.count5min,
+        noiseSec: t.noiseSec == null ? null : t.noiseSec,
+        count: t.crowdCount == null ? null : t.crowdCount,
+        countSec: t.crowdSec == null ? null : t.crowdSec,
+        count5min: (t.crowdDone && t.crowdCount != null) ? t.crowdCount : null,
         peakInRoom: t.peakInRoom == null ? null : t.peakInRoom,
         queueMin: t.queueMin == null ? null : t.queueMin,
         quietMin: t.quietMin == null ? null : t.quietMin,
         device: t.device || null
       };
-      p.events = Array.isArray(t.events) ? t.events : [];
+      p.windows = Array.isArray(t.windows) ? t.windows : [];
+      p.events = p.windows.reduce(function (all, w) {
+        return all.concat(w.events || []);
+      }, []);
     }
 
     var fl = readFlicker();
@@ -233,6 +261,11 @@
     if (!p.id) {
       form.id.focus();
       flash('export', '先填编号');
+      return;
+    }
+    if (p.level === 'conditional' && !p.note) {
+      form.note.focus();
+      flash('export', '有条件推荐要写条件');
       return;
     }
     var blob = new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' });
