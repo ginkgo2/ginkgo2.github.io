@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>工具箱 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611141340">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611141343">
 </head>
 <body data-page="tools">
 
@@ -12,15 +12,15 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611141343">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html">清单</a>
-    <a href="./map.html">地图</a>
-    <a href="./assess.html">评估</a>
-    <a href="./tools.html" aria-current="page">工具箱</a>
-    <a href="./method.html">方法</a>
-    <a href="./data.html">数据</a>
-  </nav>
+      <a href="./list.html?v=202611141343">清单</a>
+      <a href="./map.html?v=202611141343">地图</a>
+      <a href="./assess.html?v=202611141343">评估</a>
+      <a href="./tools.html?v=202611141343" aria-current="page">工具箱</a>
+      <a href="./method.html?v=202611141343">方法</a>
+      <a href="./data.html?v=202611141343">数据</a>
+    </nav>
   </div>
 </header>
 
@@ -28,76 +28,124 @@
 
   <header class="page-head">
     <h1>工具箱</h1>
-    <p class="lead">都在浏览器里跑，不装应用，不连服务器。</p>
+    <p class="lead">都在浏览器里跑，不装应用，不连服务器。测出来的数字会跟着点位一起导出。</p>
   </header>
 
-  <div class="card">
+  <section class="card">
+    <h2>分贝计</h2>
+    <p class="hint">30 秒采音，125 毫秒窗，报指示值和峰值。不是声级计，不做 A 计权，同一批数据固定用一台手机。</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn" type="button" id="db-start">开始 30 秒</button>
+      <span class="timer" id="db-timer">00:30</span>
+    </div>
+    <div class="meter" aria-hidden="true"><span id="db-bar"></span></div>
+    <dl class="readout">
+      <dt>指示值</dt><dd id="db-avg">—</dd>
+      <dt>峰值</dt><dd id="db-max">—</dd>
+    </dl>
+    <p class="hint" id="db-msg"></p>
+  </section>
 
-    <article class="tool">
-      <h3>分贝计</h3>
-      <div class="tool-body">
-        <dl>
-          <dt>报什么</dt>
-          <dd>30 秒采音，125 毫秒窗，给一个指示值和峰值。</dd>
-          <dt>不是</dt>
-          <dd>不是声级计，不做 A 计权。不同机型同一地点能差 5—10 dB，同一批数据固定用一台手机。</dd>
-        </dl>
-      </div>
-    </article>
+  <section class="card">
+    <h2>频闪自查</h2>
+    <p class="hint">拍 3 秒慢动作，回放看有没有明暗条纹。普通摄像头拍不出一百赫兹，只能看条纹判断。</p>
+    <div class="field-row">
+      <label class="field">
+        <span>灯具</span>
+        <select id="fl-lamp">
+          <option value="led">LED</option>
+          <option value="fluorescent">荧光灯管</option>
+          <option value="other">其他</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>是否调光</span>
+        <select id="fl-dim">
+          <option value="no">不调光</option>
+          <option value="yes">调光</option>
+          <option value="unknown">不知道</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>慢动作回放</span>
+        <select id="fl-seen">
+          <option value="none">未见条纹</option>
+          <option value="visible">可见明暗条纹</option>
+          <option value="unknown">无法判断</option>
+        </select>
+      </label>
+    </div>
+    <p class="hint" style="margin-top:14px">结论：<strong id="fl-level">—</strong></p>
+  </section>
 
-    <article class="tool">
-      <h3>频闪自查</h3>
-      <div class="tool-body">
-        <dl>
-          <dt>报什么</dt>
-          <dd>按步骤拍 3 秒慢动作，回放看有没有明暗条纹，记低、中、高。</dd>
-          <dt>不是</dt>
-          <dd>不测频闪百分比。普通摄像头一秒六十帧，拍不出一百赫兹的灯，只能看条纹判断。</dd>
-        </dl>
-      </div>
-    </article>
+  <section class="card">
+    <h2>事件记录器</h2>
+    <p class="hint">按住开始，松开结束，记时间、时长、峰值和能不能预料。不连续录音，不录别人的话。</p>
+    <div class="grid-2" style="margin-top:14px">
+      <label class="field">
+        <span>类型</span>
+        <select id="ev-type">
+          <option value="broadcast">商业广播</option>
+          <option value="square">广场舞音响</option>
+          <option value="horn">鸣笛</option>
+          <option value="construction">装修施工</option>
+          <option value="transit">报站提示音</option>
+          <option value="festival">婚庆鞭炮</option>
+          <option value="children">儿童尖叫</option>
+          <option value="impact">摔门碰撞</option>
+          <option value="alarm">警报</option>
+          <option value="other">其他</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>可以预料吗</span>
+        <select id="ev-expected">
+          <option value="false">不可预料</option>
+          <option value="true">可预料（固定时段）</option>
+        </select>
+      </label>
+    </div>
+    <button class="big-btn" type="button" id="ev-btn">按住记录</button>
+    <ul class="event-list" id="ev-list"></ul>
+  </section>
 
-    <article class="tool">
-      <h3>事件记录器</h3>
-      <div class="tool-body">
-        <dl>
-          <dt>报什么</dt>
-          <dd>按住计时，松开结束，自动记时间、时长、峰值、类型，旁边一个开关问"可以预料吗"。</dd>
-          <dt>不是</dt>
-          <dd>不连续录音，不做频谱。只记事件，不录别人的话。</dd>
-        </dl>
-      </div>
-    </article>
+  <section class="card">
+    <h2>人流计数</h2>
+    <p class="hint">五分钟，过一个人点一下。同时停留人数手填。</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn" type="button" id="cw-start">开始 5 分钟</button>
+      <span class="timer" id="cw-timer">05:00</span>
+      <span class="timer">已计 <strong id="cw-count">0</strong> 人</span>
+      <span class="timer">每分钟 <strong id="cw-rate">—</strong></span>
+    </div>
+    <button class="big-btn" type="button" id="cw-btn" disabled>点一下 +1</button>
+    <label class="field" style="max-width:220px;margin-top:14px">
+      <span>同时停留峰值（人）</span>
+      <input type="number" id="cw-peak" min="0" inputmode="numeric" placeholder="15">
+    </label>
+  </section>
 
-    <article class="tool">
-      <h3>人流计数</h3>
-      <div class="tool-body">
-        <dl>
-          <dt>报什么</dt>
-          <dd>五分钟计时，过一个人点一下，算每分钟多少人；同时停留人数手填。</dd>
-          <dt>不是</dt>
-          <dd>不做人脸识别，不做自动检测。</dd>
-        </dl>
-      </div>
-    </article>
-
+  <div class="actions">
+    <a class="btn btn-ghost" href="./assess.html?v=202611141343">去评估</a>
+    <button class="btn btn-ghost" type="button" id="clear-tools">清空测量</button>
   </div>
 
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
-  <div class="foot-inner">
-    <span>感官友好评估 · 海港区</span>
-    <span class="foot-note">六项 1—5 分，四档定级</span>
-    <span class="foot-build" id="build"></span>
+    <div class="foot-inner">
+      <span>感官友好评估 · 海港区</span>
+      <span class="foot-note">六项 1—5 分，四档定级</span>
+      <span class="foot-build" id="build"></span>
+    </div>
   </div>
-</div>
 </footer>
 
-<script src="./data/points.js?v=202611141340"></script>
-<script src="./data/build.js?v=202611141340"></script>
-<script src="./assets/js/core.js?v=202611141340"></script>
+<script src="./data/points.js?v=202611141343"></script>
+<script src="./data/build.js?v=202611141343"></script>
+<script src="./assets/js/core.js?v=202611141343"></script>
+<script src="./assets/js/tools.js?v=202611141343"></script>
 
 </body>
 </html>

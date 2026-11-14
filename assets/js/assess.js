@@ -96,6 +96,30 @@
     renderResult();
   });
 
+  /* ---------- 工具箱带入 ---------- */
+
+  function readTools() {
+    var t = SF.store('sf:tools');
+    if (!t) return null;
+    var has = t.leq != null || t.count5min != null ||
+      (Array.isArray(t.events) && t.events.length) || t.flicker;
+    return has ? t : null;
+  }
+
+  function renderToolsNote() {
+    var note = document.getElementById('tools-note');
+    if (!note) return;
+    var t = readTools();
+    if (!t) { note.textContent = ''; return; }
+
+    var parts = [];
+    if (t.leq != null) parts.push('指示值 ' + t.leq);
+    if (t.count5min != null) parts.push('5 分钟 ' + t.count5min + ' 人');
+    if (Array.isArray(t.events) && t.events.length) parts.push(t.events.length + ' 个事件');
+    if (t.flicker) parts.push('频闪 ' + t.flicker.level);
+    note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
+  }
+
   /* ---------- 草稿 ---------- */
 
   function collect() {
@@ -104,6 +128,19 @@
     p.missing = SF.DIMS.filter(function (d) { return p.scores[d.id] === null; })
       .map(function (d) { return d.id; });
     p.level = SF.level(p.scores).key;
+
+    var t = readTools();
+    if (t) {
+      p.measures = {
+        leq: t.leq == null ? null : t.leq,
+        lmax: t.lmax == null ? null : t.lmax,
+        count5min: t.count5min == null ? null : t.count5min,
+        peakInRoom: t.peakInRoom == null ? null : t.peakInRoom,
+        device: t.device || null
+      };
+      p.events = Array.isArray(t.events) ? t.events : [];
+      p.flicker = t.flicker || null;
+    }
     return p;
   }
 
@@ -166,4 +203,5 @@
 
   apply(SF.store(DRAFT_KEY));
   renderResult();
+  renderToolsNote();
 })();

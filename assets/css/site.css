@@ -475,3 +475,56 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
   body { background: #fff; color: #000; }
   .card { border-color: #bbb; box-shadow: none; break-inside: avoid; }
 }
+
+/* ---------- 工具箱 ---------- */
+
+.timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9375rem; }
+
+.meter {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 14px 0 4px;
+}
+.meter > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .12s linear; }
+
+.readout { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 14px 0 0; align-items: baseline; }
+.readout dt { color: var(--muted); font-size: .875rem; }
+.readout dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.big-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 20px;
+  font: inherit;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1.5px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+.big-btn:disabled { opacity: .45; cursor: default; }
+.big-btn.is-down { background: var(--ink); color: var(--bg); }
+
+.event-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 6px; }
+.event-list li {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  font-size: .9375rem;
+  color: var(--ink-2);
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.event-list li:first-child { border-top: 0; }
+.event-list .ev-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.field-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
+
+@media (max-width: 760px) {
+  .field-row { grid-template-columns: 1fr; }
+}

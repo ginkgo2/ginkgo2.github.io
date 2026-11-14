@@ -168,7 +168,11 @@
 
   function initBuild() {
     var host = document.getElementById('build');
-    if (host && window.SF_BUILD) host.textContent = '更新于 ' + window.SF_BUILD;
+    if (!host) return;
+    var parts = [];
+    if (window.SF_VERSION) parts.push(window.SF_VERSION);
+    if (window.SF_BUILD) parts.push('更新于 ' + window.SF_BUILD);
+    host.textContent = parts.join(' · ');
   }
 
   /* ---------- 启动 ---------- */
