@@ -467,6 +467,7 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 .foot-inner { display: flex; gap: 20px; flex-wrap: wrap; align-items: baseline; }
 .foot-note { color: var(--muted); }
 .foot-build { margin-left: auto; color: var(--muted); opacity: .75; }
+.foot-school { margin: 10px 0 0; font-size: .8125rem; color: var(--muted); }
 
 /* ---------- 窄屏 ---------- */
 
