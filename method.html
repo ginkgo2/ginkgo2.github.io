@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>方法 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611141336">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611141340">
 </head>
 <body data-page="method">
 
@@ -13,7 +13,14 @@
 <header class="site-head">
   <div class="wrap head-inner">
     <a class="brand" href="./index.html">感官友好评估</a>
-    <nav class="nav" id="nav" aria-label="主导航"></nav>
+    <nav class="nav" aria-label="主导航">
+    <a href="./list.html">清单</a>
+    <a href="./map.html">地图</a>
+    <a href="./assess.html">评估</a>
+    <a href="./tools.html">工具箱</a>
+    <a href="./method.html" aria-current="page">方法</a>
+    <a href="./data.html">数据</a>
+  </nav>
   </div>
 </header>
 
@@ -26,7 +33,81 @@
 
   <h2>六项与判定</h2>
   <p class="hint">1—5 分，5 分最友好。打分时只想一件事：这一项在这十几分钟里，会不会让一个敏感的孩子难受。</p>
-  <div id="dims"></div>
+  <div id="dims">
+
+    <section class="card" id="dim-noise">
+      <h3>噪声</h3>
+      <p class="hint">30 秒指示值 + 能否交谈</p>
+      <ol class="anchor-list" aria-label="噪声的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">≤50 dB，正常交谈</span></li>
+        <li><span class="n">4</span><span class="t">51—55 dB，偶尔需侧耳</span></li>
+        <li><span class="n">3</span><span class="t">56—60 dB，需提高音量</span></li>
+        <li><span class="n">2</span><span class="t">61—70 dB，需凑近说</span></li>
+        <li><span class="n">1</span><span class="t">&gt;70 dB，或必须喊话</span></li>
+      </ol>
+    </section>
+
+    <section class="card" id="dim-surprise">
+      <h3>突发声</h3>
+      <p class="hint">三个 10 分钟窗，记次数、来源、是否可预料</p>
+      <ol class="anchor-list" aria-label="突发声的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">0—1 次</span></li>
+        <li><span class="n">4</span><span class="t">2 次</span></li>
+        <li><span class="n">3</span><span class="t">3—5 次</span></li>
+        <li><span class="n">2</span><span class="t">≥6 次，但时间固定、可提前避开</span></li>
+        <li><span class="n">1</span><span class="t">≥6 次且不可预料，或有 1 次全场惊跳</span></li>
+      </ol>
+    </section>
+
+    <section class="card" id="dim-light">
+      <h3>光环境与视觉杂乱</h3>
+      <p class="hint">看灯具、慢动作看频闪、数高饱和块面</p>
+      <ol class="anchor-list" aria-label="光环境的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">自然光或柔和间接光，无可见频闪，视野干净</span></li>
+        <li><span class="n">4</span><span class="t">局部偏亮或少量高饱和装饰，无频闪</span></li>
+        <li><span class="n">3</span><span class="t">荧光灯直射或局部眩光，或中等密度海报导视</span></li>
+        <li><span class="n">2</span><span class="t">荧光灯直射 + 眩光，或可见频闪，或大面积高饱和、镜面、反光地面</span></li>
+        <li><span class="n">1</span><span class="t">强眩光 + 可见频闪 + 密集视觉噪声，或闪烁屏正对停留区</span></li>
+      </ol>
+    </section>
+
+    <section class="card" id="dim-crowd">
+      <h3>人流拥挤</h3>
+      <p class="hint">5 分钟过人数 + 排队时长 + 同时停留人数</p>
+      <ol class="anchor-list" aria-label="人流拥挤的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">&lt;10 人/5 分钟，可保持 1.5 m</span></li>
+        <li><span class="n">4</span><span class="t">10—25 人，偶需侧身</span></li>
+        <li><span class="n">3</span><span class="t">26—45 人，需侧身，或排队 ≤3 分钟</span></li>
+        <li><span class="n">2</span><span class="t">46—60 人，或排队 3—10 分钟，或同时停留 ≥15 人</span></li>
+        <li><span class="n">1</span><span class="t">&gt;60 人，或持续拥挤，或排队 &gt;10 分钟</span></li>
+      </ol>
+    </section>
+
+    <section class="card" id="dim-quiet">
+      <h3>安静空间</h3>
+      <p class="hint">最近能坐、能关门、比较安静的地方，记步行时间</p>
+      <ol class="anchor-list" aria-label="安静空间的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">≤3 分钟可达，可坐可关门，有标识</span></li>
+        <li><span class="n">4</span><span class="t">≤5 分钟可达，可坐，比较安静</span></li>
+        <li><span class="n">3</span><span class="t">有，但需消费、需询问或噪声偏高，无标识</span></li>
+        <li><span class="n">2</span><span class="t">有，但 10 分钟以上或条件很差</span></li>
+        <li><span class="n">1</span><span class="t">没有可用恢复空间</span></li>
+      </ol>
+    </section>
+
+    <section class="card" id="dim-smell">
+      <h3>气味</h3>
+      <p class="hint">站位 2 分钟，记来源</p>
+      <ol class="anchor-list" aria-label="气味的 1 到 5 分">
+        <li><span class="n">5</span><span class="t">无明显气味</span></li>
+        <li><span class="n">4</span><span class="t">极轻微，注意才察觉</span></li>
+        <li><span class="n">3</span><span class="t">明显但可忍受</span></li>
+        <li><span class="n">2</span><span class="t">明显且持续，想离开</span></li>
+        <li><span class="n">1</span><span class="t">强烈刺激，无法停留</span></li>
+      </ol>
+    </section>
+
+  </div>
 
   <h2>定级</h2>
   <div class="table-scroll">
@@ -75,27 +156,18 @@
 </main>
 
 <footer class="site-foot">
-  <div class="wrap" id="foot"></div>
+  <div class="wrap">
+  <div class="foot-inner">
+    <span>感官友好评估 · 海港区</span>
+    <span class="foot-note">六项 1—5 分，四档定级</span>
+    <span class="foot-build" id="build"></span>
+  </div>
+</div>
 </footer>
 
-<script src="./data/points.js?v=202611141336"></script>
-<script src="./data/build.js?v=202611141336"></script>
-<script src="./assets/js/core.js?v=202611141336"></script>
-<script>
-(function () {
-  var host = document.getElementById('dims');
-  host.innerHTML = window.SF.DIMS.map(function (d) {
-    var rows = [5, 4, 3, 2, 1].map(function (n) {
-      return '<li><span class="n">' + n + '</span><span class="t">' + window.SF.esc(d.anchors[n]) + '</span></li>';
-    }).join('');
-    return '<section class="card" id="dim-' + d.id + '">' +
-      '<h3>' + window.SF.esc(d.name) + '</h3>' +
-      '<p class="hint">' + window.SF.esc(d.hint) + '</p>' +
-      '<ol class="anchor-list" aria-label="' + window.SF.esc(d.name) + '的 1 到 5 分">' + rows + '</ol>' +
-      '</section>';
-  }).join('');
-})();
-</script>
+<script src="./data/points.js?v=202611141340"></script>
+<script src="./data/build.js?v=202611141340"></script>
+<script src="./assets/js/core.js?v=202611141340"></script>
 
 </body>
 </html>

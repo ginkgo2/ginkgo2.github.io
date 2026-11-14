@@ -128,7 +128,6 @@ a:hover { text-decoration-thickness: 2px; }
   text-decoration: none;
   border-bottom: 2px solid transparent;
 }
-
 .nav a:hover { color: var(--ink); border-bottom-color: var(--line-2); }
 
 .nav a[aria-current="page"] {
@@ -405,13 +404,15 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 
 /* ---------- 地图 ---------- */
 
+.wrap-wide { max-width: 1240px; }
+
 .map-shell {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   overflow: hidden;
 }
-.map-shell svg { display: block; width: 100%; height: auto; }
+.map-shell svg { display: block; width: 100%; height: auto; min-height: 62vh; }
 
 .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0 0; padding: 0; list-style: none; font-size: .9375rem; color: var(--ink-2); }
 .legend .mark { margin-right: 6px; }

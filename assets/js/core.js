@@ -3,17 +3,6 @@
 (function () {
   'use strict';
 
-  /* ---------- 导航 ---------- */
-
-  var NAV = [
-    { key: 'list', href: './list.html', label: '清单' },
-    { key: 'map', href: './map.html', label: '地图' },
-    { key: 'assess', href: './assess.html', label: '评估' },
-    { key: 'tools', href: './tools.html', label: '工具箱' },
-    { key: 'method', href: './method.html', label: '方法' },
-    { key: 'data', href: './data.html', label: '数据' }
-  ];
-
   /* ---------- 量表 ---------- */
 
   var DIMS = [
@@ -175,38 +164,17 @@
     return Array.isArray(window.SF_POINTS) ? window.SF_POINTS : [];
   }
 
-  /* ---------- 页头 / 页脚 ---------- */
+  /* ---------- 页脚里的版本戳 ---------- */
 
-  function renderNav() {
-    var host = $('#nav');
-    if (!host) return;
-    var current = document.body.getAttribute('data-page');
-    host.innerHTML = NAV.map(function (item) {
-      var active = item.key === current;
-      return '<a href="' + item.href + '"' + (active ? ' aria-current="page"' : '') + '>' +
-        esc(item.label) + '</a>';
-    }).join('');
-  }
-
-  function renderFoot() {
-    var host = $('#foot');
-    if (!host) return;
-    var build = window.SF_BUILD
-      ? '<span class="foot-build">更新于 ' + esc(window.SF_BUILD) + '</span>'
-      : '';
-    host.innerHTML =
-      '<div class="foot-inner">' +
-        '<span>感官友好评估 · 海港区</span>' +
-        '<span class="foot-note">六项 1—5 分，四档定级</span>' +
-        build +
-      '</div>';
+  function initBuild() {
+    var host = document.getElementById('build');
+    if (host && window.SF_BUILD) host.textContent = '更新于 ' + window.SF_BUILD;
   }
 
   /* ---------- 启动 ---------- */
 
   function boot() {
-    renderNav();
-    renderFoot();
+    initBuild();
   }
 
   if (document.readyState === 'loading') {
@@ -216,7 +184,6 @@
   }
 
   window.SF = {
-    NAV: NAV,
     DIMS: DIMS,
     ENV_TYPES: ENV_TYPES,
     SCENARIOS: SCENARIOS,
