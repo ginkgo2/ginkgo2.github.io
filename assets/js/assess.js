@@ -36,12 +36,52 @@
       '<span class="txt">未测</span>' +
       '</label>';
 
+    var extra = '';
+    if (d.id === 'light') {
+      extra = '<div class="dim-extra">' +
+        '<span class="dim-extra-label">光照快查</span>' +
+        '<select data-fl="lamp" aria-label="灯具">' +
+          '<option value="">灯具</option>' +
+          '<option value="led">LED</option>' +
+          '<option value="fluorescent">荧光灯管</option>' +
+          '<option value="other">其他</option>' +
+        '</select>' +
+        '<select data-fl="dim" aria-label="是否调光">' +
+          '<option value="">调光</option>' +
+          '<option value="no">不调光</option>' +
+          '<option value="yes">调光</option>' +
+          '<option value="unknown">不知道</option>' +
+        '</select>' +
+        '<select data-fl="seen" aria-label="慢动作有没有条纹">' +
+          '<option value="">慢动作条纹</option>' +
+          '<option value="visible">可见条纹</option>' +
+          '<option value="none">未见条纹</option>' +
+          '<option value="unknown">无法判断</option>' +
+        '</select>' +
+        '</div>';
+    }
+
     return '<fieldset class="dim-block">' +
       '<div class="dim-head"><h3>' + SF.esc(d.name) + '</h3>' +
       '<span class="hint">' + SF.esc(d.hint) + '</span></div>' +
       '<div class="ladder">' + rows + unknown + '</div>' +
+      extra +
       '</fieldset>';
   }).join('');
+
+  /* ---------- 光度快查 ---------- */
+
+  function readFlicker() {
+    var lamp = (form.querySelector('[data-fl="lamp"]') || {}).value || '';
+    var dim = (form.querySelector('[data-fl="dim"]') || {}).value || '';
+    var seen = (form.querySelector('[data-fl="seen"]') || {}).value || '';
+    if (!lamp && !dim && !seen) return null;
+
+    var level = seen === 'visible' ? '高'
+      : seen === 'unknown' ? '中'
+      : seen === 'none' ? '低' : null;
+    return { lamp: lamp || null, dim: dim || null, seen: seen || null, level: level };
+  }
 
   /* ---------- 取值 ---------- */
 
@@ -101,8 +141,8 @@
   function readTools() {
     var t = SF.store('sf:tools');
     if (!t) return null;
-    var has = t.leq != null || t.count5min != null ||
-      (Array.isArray(t.events) && t.events.length) || t.flicker;
+    var has = t.leq != null || t.count5min != null || t.quietMin != null ||
+      (Array.isArray(t.events) && t.events.length);
     return has ? t : null;
   }
 
@@ -115,8 +155,9 @@
     var parts = [];
     if (t.leq != null) parts.push('指示值 ' + t.leq);
     if (t.count5min != null) parts.push('5 分钟 ' + t.count5min + ' 人');
-    if (Array.isArray(t.events) && t.events.length) parts.push(t.events.length + ' 个事件');
-    if (t.flicker) parts.push('频闪 ' + t.flicker.level);
+    if (t.queueMin != null) parts.push('排队 ' + t.queueMin + ' 分钟');
+    if (t.quietMin != null) parts.push('安静空间 ' + t.quietMin + ' 分钟');
+    if (Array.isArray(t.events) && t.events.length) parts.push(t.events.length + ' 次事件');
     note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
   }
 
@@ -136,11 +177,16 @@
         lmax: t.lmax == null ? null : t.lmax,
         count5min: t.count5min == null ? null : t.count5min,
         peakInRoom: t.peakInRoom == null ? null : t.peakInRoom,
+        queueMin: t.queueMin == null ? null : t.queueMin,
+        quietMin: t.quietMin == null ? null : t.quietMin,
         device: t.device || null
       };
       p.events = Array.isArray(t.events) ? t.events : [];
-      p.flicker = t.flicker || null;
     }
+
+    var fl = readFlicker();
+    if (fl) p.flicker = fl;
+
     return p;
   }
 
@@ -158,6 +204,14 @@
       var target = form.querySelector(name + '[value="' + (v == null ? '' : v) + '"]');
       if (target) target.checked = true;
     });
+
+    if (p.flicker) {
+      ['lamp', 'dim', 'seen'].forEach(function (k) {
+        var sel = form.querySelector('[data-fl="' + k + '"]');
+        if (sel && p.flicker[k]) sel.value = p.flicker[k];
+      });
+    }
+
     renderResult();
   }
 

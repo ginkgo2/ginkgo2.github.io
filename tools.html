@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>工具箱 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611141343">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611141352">
 </head>
 <body data-page="tools">
 
@@ -12,15 +12,15 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611141343">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611141352">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611141343">清单</a>
-      <a href="./map.html?v=202611141343">地图</a>
-      <a href="./assess.html?v=202611141343">评估</a>
-      <a href="./tools.html?v=202611141343" aria-current="page">工具箱</a>
-      <a href="./method.html?v=202611141343">方法</a>
-      <a href="./data.html?v=202611141343">数据</a>
-    </nav>
+    <a href="./list.html?v=202611141352">清单</a>
+    <a href="./map.html?v=202611141352">地图</a>
+    <a href="./tools.html?v=202611141352" aria-current="page">工具箱</a>
+    <a href="./assess.html?v=202611141352">评估</a>
+    <a href="./method.html?v=202611141352">方法</a>
+    <a href="./data.html?v=202611141352">数据</a>
+  </nav>
   </div>
 </header>
 
@@ -28,11 +28,11 @@
 
   <header class="page-head">
     <h1>工具箱</h1>
-    <p class="lead">都在浏览器里跑，不装应用，不连服务器。测出来的数字会跟着点位一起导出。</p>
+    <p class="lead">现场先测这些，数字会自动填进评估页。四个工具各对应六项里的一项。</p>
   </header>
 
   <section class="card">
-    <h2>分贝计</h2>
+    <h2>分贝计 <span class="hint">→ 噪声</span></h2>
     <p class="hint">30 秒采音，125 毫秒窗，报指示值和峰值。不是声级计，不做 A 计权，同一批数据固定用一台手机。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="db-start">开始 30 秒</button>
@@ -47,44 +47,18 @@
   </section>
 
   <section class="card">
-    <h2>频闪自查</h2>
-    <p class="hint">拍 3 秒慢动作，回放看有没有明暗条纹。普通摄像头拍不出一百赫兹，只能看条纹判断。</p>
-    <div class="field-row">
-      <label class="field">
-        <span>灯具</span>
-        <select id="fl-lamp">
-          <option value="led">LED</option>
-          <option value="fluorescent">荧光灯管</option>
-          <option value="other">其他</option>
-        </select>
-      </label>
-      <label class="field">
-        <span>是否调光</span>
-        <select id="fl-dim">
-          <option value="no">不调光</option>
-          <option value="yes">调光</option>
-          <option value="unknown">不知道</option>
-        </select>
-      </label>
-      <label class="field">
-        <span>慢动作回放</span>
-        <select id="fl-seen">
-          <option value="none">未见条纹</option>
-          <option value="visible">可见明暗条纹</option>
-          <option value="unknown">无法判断</option>
-        </select>
-      </label>
+    <h2>十分钟观察 <span class="hint">→ 突发声</span></h2>
+    <p class="hint">按下开始，站定十分钟。每出现一次预料不到的声音就点一下，顺手选类型和能不能预料。</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn" type="button" id="ob-start">开始 10 分钟</button>
+      <span class="timer" id="ob-timer">10:00</span>
+      <span class="timer">已记 <strong id="ob-count">0</strong> 次</span>
+      <span class="timer">每分钟 <strong id="ob-rate">—</strong></span>
     </div>
-    <p class="hint" style="margin-top:14px">结论：<strong id="fl-level">—</strong></p>
-  </section>
-
-  <section class="card">
-    <h2>事件记录器</h2>
-    <p class="hint">按住开始，松开结束，记时间、时长、峰值和能不能预料。不连续录音，不录别人的话。</p>
     <div class="grid-2" style="margin-top:14px">
       <label class="field">
         <span>类型</span>
-        <select id="ev-type">
+        <select id="ob-type">
           <option value="broadcast">商业广播</option>
           <option value="square">广场舞音响</option>
           <option value="horn">鸣笛</option>
@@ -99,19 +73,19 @@
       </label>
       <label class="field">
         <span>可以预料吗</span>
-        <select id="ev-expected">
+        <select id="ob-expected">
           <option value="false">不可预料</option>
           <option value="true">可预料（固定时段）</option>
         </select>
       </label>
     </div>
-    <button class="big-btn" type="button" id="ev-btn">按住记录</button>
-    <ul class="event-list" id="ev-list"></ul>
+    <button class="big-btn" type="button" id="ob-btn" disabled>记一次</button>
+    <ul class="event-list" id="ob-list"></ul>
   </section>
 
   <section class="card">
-    <h2>人流计数</h2>
-    <p class="hint">五分钟，过一个人点一下。同时停留人数手填。</p>
+    <h2>人流与排队 <span class="hint">→ 人流拥挤</span></h2>
+    <p class="hint">五分钟，过一个人点一下。排队时长和同时停留人数手填。</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn" type="button" id="cw-start">开始 5 分钟</button>
       <span class="timer" id="cw-timer">05:00</span>
@@ -119,14 +93,30 @@
       <span class="timer">每分钟 <strong id="cw-rate">—</strong></span>
     </div>
     <button class="big-btn" type="button" id="cw-btn" disabled>点一下 +1</button>
-    <label class="field" style="max-width:220px;margin-top:14px">
-      <span>同时停留峰值（人）</span>
-      <input type="number" id="cw-peak" min="0" inputmode="numeric" placeholder="15">
-    </label>
+    <div class="grid-2" style="margin-top:14px">
+      <label class="field">
+        <span>排队时长（分钟）</span>
+        <input type="number" id="cw-queue" min="0" step="0.5" inputmode="decimal" placeholder="4">
+      </label>
+      <label class="field">
+        <span>同时停留峰值（人）</span>
+        <input type="number" id="cw-peak" min="0" inputmode="numeric" placeholder="15">
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>安静空间计时 <span class="hint">→ 安静空间</span></h2>
+    <p class="hint">从站立位置走到能坐下、能关门的地方，按一下开始，到了按结束。</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn" type="button" id="qt-btn">开始计时</button>
+      <span class="timer" id="qt-time">00:00</span>
+    </div>
+    <p class="hint" id="qt-msg"></p>
   </section>
 
   <div class="actions">
-    <a class="btn btn-ghost" href="./assess.html?v=202611141343">去评估</a>
+    <a class="btn" href="./assess.html?v=202611141352">带着这些去评估</a>
     <button class="btn btn-ghost" type="button" id="clear-tools">清空测量</button>
   </div>
 
@@ -134,18 +124,18 @@
 
 <footer class="site-foot">
   <div class="wrap">
-    <div class="foot-inner">
-      <span>感官友好评估 · 海港区</span>
-      <span class="foot-note">六项 1—5 分，四档定级</span>
-      <span class="foot-build" id="build"></span>
-    </div>
+  <div class="foot-inner">
+    <span>感官友好评估 · 海港区</span>
+    <span class="foot-note">六项 1—5 分，四档定级</span>
+    <span class="foot-build" id="build"></span>
   </div>
+</div>
 </footer>
 
-<script src="./data/points.js?v=202611141343"></script>
-<script src="./data/build.js?v=202611141343"></script>
-<script src="./assets/js/core.js?v=202611141343"></script>
-<script src="./assets/js/tools.js?v=202611141343"></script>
+<script src="./data/points.js?v=202611141352"></script>
+<script src="./data/build.js?v=202611141352"></script>
+<script src="./assets/js/core.js?v=202611141352"></script>
+<script src="./assets/js/tools.js?v=202611141352"></script>
 
 </body>
 </html>

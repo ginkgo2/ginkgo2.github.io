@@ -288,6 +288,24 @@ fieldset { border: 0; padding: 0; margin: 0; }
 .dim-block { padding: 20px 0; border-top: 1px solid var(--line); }
 .dim-block:first-of-type { border-top: 0; padding-top: 4px; }
 
+.dim-extra { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.dim-extra .dim-extra-label { font-size: .875rem; color: var(--muted); }
+.dim-extra select {
+  font: inherit;
+  font-size: .875rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 5px 9px;
+}
+
+@media (min-width: 1080px) {
+  #dims { display: grid; grid-template-columns: 1fr 1fr; column-gap: 52px; align-items: start; }
+  .dim-block:nth-child(2) { border-top: 0; }
+  .dim-block { padding: 18px 0; }
+}
+
 .dim-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
 .dim-head h3 { margin: 0; font-size: 1.0625rem; }
 
@@ -404,7 +422,7 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 
 /* ---------- 地图 ---------- */
 
-.wrap-wide { max-width: 1240px; }
+.wrap-wide { max-width: 1440px; }
 
 .map-shell {
   border: 1px solid var(--line);

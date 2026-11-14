@@ -1,5 +1,5 @@
-/* 工具箱：分贝计、频闪自查、事件记录器、人流计数
-   全部在本地跑，结果写进 localStorage 的 sf:tools，评估页会读走。 */
+/* 工具箱：分贝计、十分钟观察、人流与排队、安静空间计时
+   结果写进 localStorage 的 sf:tools，评估页会读走。 */
 (function () {
   'use strict';
 
@@ -18,11 +18,11 @@
   }
 
   function pad2(n) { return String(n).padStart(2, '0'); }
-  function clock(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()); }
-  function left(ms) {
+  function mmss(ms) {
     var s = Math.max(0, Math.ceil(ms / 1000));
     return pad2(Math.floor(s / 60)) + ':' + pad2(s % 60);
   }
+  function clock(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()); }
 
   /* ---------- 麦克风 ---------- */
 
@@ -70,7 +70,7 @@
 
     $('db-msg').textContent = '请求麦克风……';
     Mic.ensure().then(function () {
-      $('db-msg').textContent = '同一台手机、同一个位置，测完去评估页导出。';
+      $('db-msg').textContent = '同一台手机、同一个位置，测完去评估页。';
       db = { sumSq: 0, n: 0, max: -Infinity };
       var end = Date.now() + 30000;
       $('db-start').textContent = '停止';
@@ -88,7 +88,7 @@
         $('db-avg').textContent = Math.round(10 * Math.log10(db.sumSq / db.n) + OFFSET);
 
         var rest = end - Date.now();
-        $('db-timer').textContent = left(rest);
+        $('db-timer').textContent = mmss(rest);
         if (rest <= 0) stopDb();
       }, 125);
     }).catch(function (err) {
@@ -110,99 +110,70 @@
     save({ leq: avg, lmax: max, device: navigator.userAgent.slice(0, 48) });
   }
 
-  /* ---------- 频闪自查 ---------- */
-
-  function flicker() {
-    var lamp = $('fl-lamp').value;
-    var seen = $('fl-seen').value;
-    var level, note;
-
-    if (seen === 'visible') {
-      level = '高';
-      note = '回放能看到明暗条纹';
-    } else if (seen === 'unknown') {
-      level = '中';
-      note = '无法判断，按中等记，换个角度再拍一次';
-    } else {
-      level = '低';
-      note = '未见条纹';
-      if (lamp === 'fluorescent') note += '；荧光灯通常有频闪，建议再拍一次';
-    }
-
-    $('fl-level').textContent = level + '（' + note + '）';
-    save({
-      flicker: { level: level, lamp: lamp, dim: $('fl-dim').value, seen: seen, note: note }
-    });
-  }
-
-  ['fl-lamp', 'fl-dim', 'fl-seen'].forEach(function (id) {
-    $(id).addEventListener('change', flicker);
-  });
-
-  /* ---------- 事件记录器 ---------- */
+  /* ---------- 十分钟观察 ---------- */
 
   var saved = load();
   var events = Array.isArray(saved.events) ? saved.events : [];
+  var ob = { timer: null, start: 0, end: 0 };
 
   function typeLabel(value) {
-    var opt = $('ev-type').querySelector('option[value="' + value + '"]');
+    var opt = $('ob-type').querySelector('option[value="' + value + '"]');
     return opt ? opt.textContent : value;
   }
 
   function renderEvents() {
-    $('ev-list').innerHTML = events.slice().reverse().map(function (e) {
-      var peak = e.peak == null ? '—' : e.peak + ' 指示值';
+    $('ob-list').innerHTML = events.slice().reverse().map(function (e) {
       return '<li><span class="ev-time">' + e.t + '</span><span>' +
         window.SF.esc(typeLabel(e.type)) +
         (e.expected ? ' · 可预料' : ' · 不可预料') +
-        '</span><span>' + peak + ' · ' + e.dur + ' s</span></li>';
+        '</span><span></span></li>';
     }).join('');
+    $('ob-count').textContent = events.length;
   }
 
-  var hold = { on: false, start: 0, peak: -Infinity, timer: null };
+  $('ob-start').addEventListener('click', function () {
+    if (ob.timer) { finishOb(); return; }
 
-  $('ev-btn').addEventListener('pointerdown', function (e) {
-    e.preventDefault();
-    if (hold.on) return;
-    hold.on = true;
-    hold.start = Date.now();
-    hold.peak = -Infinity;
-    $('ev-btn').classList.add('is-down');
-    $('ev-btn').textContent = '松手结束';
+    ob.start = Date.now();
+    ob.end = ob.start + 600000;
+    $('ob-btn').disabled = false;
+    $('ob-start').textContent = '结束观察';
 
-    hold.timer = setInterval(function () {
-      if (!Mic.ready) return;
-      var r = Mic.rms();
-      var d = r > 0 ? 20 * Math.log10(r) : -100;
-      if (d > hold.peak) hold.peak = d;
-    }, 80);
+    ob.timer = setInterval(function () {
+      var rest = ob.end - Date.now();
+      $('ob-timer').textContent = mmss(rest);
+
+      var mins = (Date.now() - ob.start) / 60000;
+      if (mins > 0.2) $('ob-rate').textContent = (events.length / mins).toFixed(1);
+
+      if (rest <= 0) finishOb();
+    }, 250);
   });
 
-  function endHold() {
-    if (!hold.on) return;
-    hold.on = false;
-    clearInterval(hold.timer);
-    $('ev-btn').classList.remove('is-down');
-    $('ev-btn').textContent = '按住记录';
-
-    var dur = Math.max(0.2, (Date.now() - hold.start) / 1000);
-    var peak = (Mic.ready && isFinite(hold.peak)) ? Math.round(hold.peak + OFFSET) : null;
+  $('ob-btn').addEventListener('click', function () {
+    if ($('ob-btn').disabled) return;
 
     events.push({
       t: clock(new Date()),
-      type: $('ev-type').value,
-      expected: $('ev-expected').value === 'true',
-      peak: peak,
-      dur: Math.round(dur * 10) / 10
+      type: $('ob-type').value,
+      expected: $('ob-expected').value === 'true'
     });
     save({ events: events });
     renderEvents();
+
+    var mins = ob.start ? (Date.now() - ob.start) / 60000 : 0;
+    if (mins > 0.2) $('ob-rate').textContent = (events.length / mins).toFixed(1);
+  });
+
+  function finishOb() {
+    if (ob.timer) { clearInterval(ob.timer); ob.timer = null; }
+    $('ob-btn').disabled = true;
+    $('ob-start').textContent = '再观察 10 分钟';
+    $('ob-timer').textContent = '00:00';
+    save({ events: events });
   }
 
-  document.addEventListener('pointerup', endHold);
-  document.addEventListener('pointercancel', endHold);
-
-  /* ---------- 人流计数 ---------- */
+  /* ---------- 人流与排队 ---------- */
 
   var cw = { timer: null, count: 0, start: 0, end: 0 };
 
@@ -219,7 +190,7 @@
 
     cw.timer = setInterval(function () {
       var rest = cw.end - Date.now();
-      $('cw-timer').textContent = left(rest);
+      $('cw-timer').textContent = mmss(rest);
 
       var mins = (Date.now() - cw.start) / 60000;
       if (mins > 0.05) $('cw-rate').textContent = (cw.count / mins).toFixed(1);
@@ -241,12 +212,44 @@
     $('cw-timer').textContent = '00:00';
     save({
       count5min: cw.count,
+      queueMin: Number($('cw-queue').value) || null,
       peakInRoom: Number($('cw-peak').value) || null
     });
   }
 
-  $('cw-peak').addEventListener('change', function () {
-    save({ peakInRoom: Number($('cw-peak').value) || null });
+  ['cw-queue', 'cw-peak'].forEach(function (id) {
+    $(id).addEventListener('change', function () {
+      save({ queueMin: Number($('cw-queue').value) || null, peakInRoom: Number($('cw-peak').value) || null });
+    });
+  });
+
+  /* ---------- 安静空间计时 ---------- */
+
+  var qt = { timer: null, start: 0 };
+
+  $('qt-btn').addEventListener('click', function () {
+    if (!qt.timer) {
+      qt.start = Date.now();
+      $('qt-btn').textContent = '到了，停';
+      $('qt-msg').textContent = '';
+      qt.timer = setInterval(function () {
+        $('qt-time').textContent = mmss(Date.now() - qt.start);
+      }, 250);
+      return;
+    }
+
+    clearInterval(qt.timer);
+    qt.timer = null;
+    var sec = Math.round((Date.now() - qt.start) / 1000);
+    var min = Math.round(sec / 60 * 10) / 10;
+    $('qt-btn').textContent = '再走一次';
+    $('qt-time').textContent = mmss(sec * 1000);
+
+    var band = min <= 3 ? '≤3 分钟，对应 5 分' :
+               min <= 5 ? '3—5 分钟，对应 4 分' :
+               min <= 10 ? '5—10 分钟，对应 3 分' : '10 分钟以上，对应 2 分';
+    $('qt-msg').textContent = '走了 ' + min + ' 分钟，' + band;
+    save({ quietMin: min });
   });
 
   /* ---------- 清空 ---------- */
@@ -262,10 +265,17 @@
     $('db-timer').textContent = '00:30';
     $('db-start').textContent = '开始 30 秒';
     $('db-msg').textContent = '';
+    $('ob-count').textContent = '0';
+    $('ob-rate').textContent = '—';
+    $('ob-timer').textContent = '10:00';
     $('cw-count').textContent = '0';
     $('cw-rate').textContent = '—';
     $('cw-timer').textContent = '05:00';
+    $('cw-queue').value = '';
     $('cw-peak').value = '';
+    $('qt-time').textContent = '00:00';
+    $('qt-msg').textContent = '';
+    $('qt-btn').textContent = '开始计时';
   });
 
   /* ---------- 恢复上次的显示 ---------- */
@@ -274,5 +284,7 @@
   if (saved.leq != null) $('db-avg').textContent = saved.leq;
   if (saved.lmax != null) $('db-max').textContent = saved.lmax;
   if (saved.count5min != null) $('cw-count').textContent = saved.count5min;
+  if (saved.queueMin != null) $('cw-queue').value = saved.queueMin;
   if (saved.peakInRoom != null) $('cw-peak').value = saved.peakInRoom;
+  if (saved.quietMin != null) $('qt-time').textContent = mmss(saved.quietMin * 60000);
 })();
