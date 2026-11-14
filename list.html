@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>清单 · 感官友好</title>
+<title>清单 · 感官友好评估</title>
 <link rel="stylesheet" href="./assets/css/site.css">
 </head>
 <body data-page="list">
@@ -12,7 +12,7 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html">感官友好</a>
+    <a class="brand" href="./index.html">感官友好评估</a>
     <nav class="nav" id="nav" aria-label="主导航"></nav>
   </div>
 </header>
@@ -24,21 +24,7 @@
     <p class="lead">按环境类型和等级筛。每条写明依据和一句建议。</p>
   </header>
 
-  <div class="filters">
-    <div class="group" role="group" aria-label="环境类型">
-      <button type="button" class="chip" data-filter="envType" data-value="" aria-pressed="true">全部类型</button>
-      <button type="button" class="chip" data-filter="envType" data-value="path" aria-pressed="false">通行路径</button>
-      <button type="button" class="chip" data-filter="envType" data-value="daily" aria-pressed="false">日常必需</button>
-      <button type="button" class="chip" data-filter="envType" data-value="public" aria-pressed="false">公共空间</button>
-      <button type="button" class="chip" data-filter="envType" data-value="venue" aria-pressed="false">大型场馆</button>
-    </div>
-    <div class="group" role="group" aria-label="等级">
-      <button type="button" class="chip" data-filter="level" data-value="" aria-pressed="true">全部等级</button>
-      <button type="button" class="chip" data-filter="level" data-value="recommended" aria-pressed="false">推荐</button>
-      <button type="button" class="chip" data-filter="level" data-value="conditional" aria-pressed="false">有条件推荐</button>
-    </div>
-  </div>
-
+  <div class="filters" id="filters" hidden></div>
   <div id="results"></div>
 
 </main>
@@ -51,18 +37,40 @@
 <script src="./assets/js/core.js"></script>
 <script>
 (function () {
-  var state = { envType: '', level: '' };
+  var SF = window.SF;
+  var data = SF.points();
+  var filters = document.getElementById('filters');
   var host = document.getElementById('results');
-  var data = window.SF.points();
+  var state = { envType: '', level: '' };
+
+  var GROUPS = [
+    {
+      key: 'envType',
+      label: '环境类型',
+      options: [{ v: '', t: '全部' }].concat(SF.ENV_TYPES.map(function (t) {
+        return { v: t.id, t: t.name };
+      }))
+    },
+    {
+      key: 'level',
+      label: '等级',
+      options: [
+        { v: '', t: '全部' },
+        { v: 'recommended', t: '推荐' },
+        { v: 'conditional', t: '有条件推荐' }
+      ]
+    }
+  ];
 
   function card(p) {
-    var lv = window.SF.LEVELS[p.level] || window.SF.LEVELS.no_data;
-    var type = (window.SF.ENV_TYPES.filter(function (t) { return t.id === p.envType; })[0] || {}).name || '';
+    var lv = SF.LEVELS[p.level] || SF.LEVELS.no_data;
+    var type = (SF.ENV_TYPES.filter(function (t) { return t.id === p.envType; })[0] || {}).name || '';
     return '<article class="card">' +
-      '<h2>' + window.SF.esc(p.name) + '</h2>' +
-      '<p class="hint">' + window.SF.esc(type) + ' · ' + window.SF.fmtDate(p.observedAt) + '</p>' +
-      '<p><span class="badge badge-' + lv.cls + '"><span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span></p>' +
-      '<p class="prose">' + window.SF.esc(p.note || lv.text) + '</p>' +
+      '<div class="dim-head"><h2 style="margin:0;font-size:1.0625rem">' + SF.esc(p.name) + '</h2>' +
+      '<span class="hint">' + SF.esc(type) + ' · ' + SF.fmtDate(p.observedAt) + '</span></div>' +
+      '<p style="margin:10px 0 6px"><span class="badge badge-' + lv.cls + '">' +
+      '<span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span></p>' +
+      '<p class="prose" style="margin:0">' + SF.esc(p.note || lv.text) + '</p>' +
       '</article>';
   }
 
@@ -72,23 +80,55 @@
              (!state.level || p.level === state.level);
     });
     if (!list.length) {
-      host.innerHTML = '<div class="empty">还没有点位。</div>';
+      host.innerHTML = '<div class="empty">没有符合条件的点位。</div>';
       return;
     }
     host.innerHTML = list.map(card).join('');
   }
 
-  document.querySelectorAll('.chip').forEach(function (btn) {
-    btn.addEventListener('click', function () {
+  function updateChips() {
+    SF.$$('.chip', filters).forEach(function (btn) {
       var key = btn.getAttribute('data-filter');
-      state[key] = btn.getAttribute('data-value');
-      document.querySelectorAll('.chip[data-filter="' + key + '"]').forEach(function (b) {
-        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-      });
-      render();
+      var val = btn.getAttribute('data-value');
+      var n = data.filter(function (p) {
+        var self = !val || p[key] === val;
+        var other = key === 'envType'
+          ? (!state.level || p.level === state.level)
+          : (!state.envType || p.envType === state.envType);
+        return self && other;
+      }).length;
+      btn.querySelector('.count').textContent = n;
+      btn.setAttribute('aria-pressed', state[key] === val ? 'true' : 'false');
     });
+  }
+
+  if (!data.length) {
+    host.innerHTML = '<div class="empty">还没有点位。</div>';
+    return;
+  }
+
+  filters.hidden = false;
+  filters.innerHTML = GROUPS.map(function (g) {
+    return '<div class="filter-row">' +
+      '<span class="filter-label">' + g.label + '</span>' +
+      '<div class="group" role="group" aria-label="' + g.label + '">' +
+      g.options.map(function (o) {
+        return '<button type="button" class="chip" data-filter="' + g.key +
+          '" data-value="' + o.v + '" aria-pressed="false">' + o.t +
+          '<span class="count">0</span></button>';
+      }).join('') +
+      '</div></div>';
+  }).join('');
+
+  filters.addEventListener('click', function (e) {
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    state[btn.getAttribute('data-filter')] = btn.getAttribute('data-value');
+    updateChips();
+    render();
   });
 
+  updateChips();
   render();
 })();
 </script>

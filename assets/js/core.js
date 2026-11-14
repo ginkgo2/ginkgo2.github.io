@@ -193,37 +193,9 @@
     if (!host) return;
     host.innerHTML =
       '<div class="foot-inner">' +
-        '<span>感官友好 · 海港区</span>' +
-        '<span class="size-ctrl" role="group" aria-label="正文字号">' +
-          '<button type="button" data-size="sm">小</button>' +
-          '<button type="button" data-size="md">中</button>' +
-          '<button type="button" data-size="lg">大</button>' +
-        '</span>' +
-        '<span class="foot-links"><a href="./method.html#boundary">边界</a>' +
-        '<a href="./method.html#a11y">无障碍</a></span>' +
+        '<span>感官友好评估 · 海港区</span>' +
+        '<span class="foot-note">六项 1—5 分，四档定级</span>' +
       '</div>';
-  }
-
-  function applySize(size) {
-    var valid = { sm: 1, md: 1, lg: 1, xl: 1 };
-    var v = valid[size] ? size : 'md';
-    if (v === 'md') document.body.removeAttribute('data-size');
-    else document.body.setAttribute('data-size', v);
-    $$('.size-ctrl button').forEach(function (b) {
-      b.setAttribute('aria-pressed', b.getAttribute('data-size') === v ? 'true' : 'false');
-    });
-  }
-
-  function initSize() {
-    var saved = store('sf:size');
-    applySize(saved || 'md');
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('.size-ctrl button');
-      if (!btn) return;
-      var size = btn.getAttribute('data-size');
-      applySize(size);
-      store('sf:size', size);
-    });
   }
 
   /* ---------- 启动 ---------- */
@@ -231,7 +203,6 @@
   function boot() {
     renderNav();
     renderFoot();
-    initSize();
   }
 
   if (document.readyState === 'loading') {
