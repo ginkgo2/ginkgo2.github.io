@@ -47,6 +47,9 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--ink);
   font: 16px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
@@ -136,7 +139,19 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* ---------- 正文 ---------- */
 
-main { padding: 44px 0 80px; }
+main { flex: 1 0 auto; padding: 44px 0 72px; }
+
+.home { padding-top: 34px; }
+
+.home-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 56px;
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+.home-row h2 { margin: 0 0 14px; font-size: .9375rem; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
 
 .page-head { margin-bottom: 34px; }
 .page-head h1 { font-size: clamp(1.75rem, 3.6vw, 2.25rem); line-height: 1.3; margin: 0 0 8px; letter-spacing: -.01em; text-wrap: balance; }
@@ -224,7 +239,7 @@ h3 { font-size: 1rem; margin: 24px 0 8px; }
 .stats .num { display: block; font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
 .stats .lab { display: block; color: var(--muted); font-size: .875rem; }
 
-.dims { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 18px 0 0; list-style: none; }
+.dims { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
 .dims a {
   display: inline-block;
   padding: 6px 12px;
@@ -236,6 +251,16 @@ h3 { font-size: 1rem; margin: 24px 0 8px; }
   background: var(--surface);
 }
 .dims a:hover { color: var(--ink); border-color: var(--line-2); }
+
+.level-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.level-legend li {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  align-items: center;
+  gap: 14px;
+  font-size: .9375rem;
+  color: var(--ink-2);
+}
 
 /* ---------- 等级 ---------- */
 
@@ -414,13 +439,15 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 /* ---------- 页脚 ---------- */
 
 .site-foot {
+  margin-top: auto;
   border-top: 1px solid var(--line);
-  padding: 28px 0 40px;
+  padding: 24px 0 30px;
   color: var(--muted);
   font-size: .875rem;
 }
 .foot-inner { display: flex; gap: 20px; flex-wrap: wrap; align-items: baseline; }
 .foot-note { color: var(--muted); }
+.foot-build { margin-left: auto; color: var(--muted); opacity: .75; }
 
 /* ---------- 窄屏 ---------- */
 
@@ -433,7 +460,9 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
   .grid-2 { grid-template-columns: 1fr; }
   .tool { grid-template-columns: 1fr; }
   .stats { gap: 28px; }
-  main { padding: 30px 0 60px; }
+  .home-row { grid-template-columns: 1fr; gap: 26px; }
+  .level-legend li { grid-template-columns: 118px 1fr; }
+  main { padding: 30px 0 52px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

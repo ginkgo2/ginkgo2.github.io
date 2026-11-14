@@ -191,10 +191,14 @@
   function renderFoot() {
     var host = $('#foot');
     if (!host) return;
+    var build = window.SF_BUILD
+      ? '<span class="foot-build">更新于 ' + esc(window.SF_BUILD) + '</span>'
+      : '';
     host.innerHTML =
       '<div class="foot-inner">' +
         '<span>感官友好评估 · 海港区</span>' +
         '<span class="foot-note">六项 1—5 分，四档定级</span>' +
+        build +
       '</div>';
   }
 
