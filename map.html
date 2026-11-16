@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162136">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162147">
 </head>
 <body data-page="map">
 
@@ -12,15 +12,15 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162136">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162147">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611162136">清单</a>
-    <a href="./map.html?v=202611162136" aria-current="page">地图</a>
-    <a href="./tools.html?v=202611162136">工具箱</a>
-    <a href="./assess.html?v=202611162136">评估</a>
-    <a href="./method.html?v=202611162136">方法</a>
-    <a href="./data.html?v=202611162136">数据</a>
-  </nav>
+      <a href="./list.html?v=202611162147">清单</a>
+      <a href="./map.html?v=202611162147" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611162147">工具箱</a>
+      <a href="./assess.html?v=202611162147">评估</a>
+      <a href="./method.html?v=202611162147">方法</a>
+      <a href="./data.html?v=202611162147">数据</a>
+    </nav>
   </div>
 </header>
 
@@ -28,29 +28,39 @@
 
   <header class="page-head">
     <h1>地图</h1>
-    <p class="lead">浅色是待核验，深色是评过的。点开看卡片。</p>
+    <p class="lead">拖动看周围，滚轮或按钮缩放。放大到一定倍率才显示“有条件推荐”。</p>
   </header>
 
   <div class="map-shell">
-    <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" role="img" aria-label="海港区示意底图">
-      <defs>
-        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="var(--line)" stroke-width="1"></path>
-        </pattern>
-      </defs>
-      <rect width="1000" height="620" fill="var(--surface-2)"></rect>
-      <rect width="1000" height="620" fill="url(#grid)"></rect>
+    <svg id="map" viewBox="0 0 1000 620" role="application" aria-label="海港区点位地图，可拖动和缩放">
+      <image href="./assets/img/haigang.svg" x="0" y="0" width="1000" height="620"></image>
       <g id="pins"></g>
+      <circle id="pick-dot" cx="-99" cy="-99" r="0" fill="none" stroke="#9c3b30" stroke-width="0"></circle>
     </svg>
+
+    <div class="map-tools">
+      <button type="button" id="zoom-in" aria-label="放大">＋</button>
+      <button type="button" id="zoom-out" aria-label="缩小">－</button>
+      <button type="button" id="zoom-reset">复位</button>
+      <button type="button" id="pick-toggle" hidden>标点</button>
+    </div>
   </div>
 
   <ul class="legend">
-    <li><span class="mark none" aria-hidden="true">○</span>待核验</li>
     <li><span class="mark ok" aria-hidden="true">●</span>推荐</li>
     <li><span class="mark warn" aria-hidden="true">▲</span>有条件推荐</li>
+    <li class="hint" id="shown"></li>
   </ul>
 
-  <p class="hint" id="count">还没有点位。</p>
+  <p class="hint" id="empty" hidden>还没有点位。</p>
+
+  <div id="pick-panel" class="card" hidden>
+    <p class="hint">标点模式：在地图上点一下，坐标就出来了，填进 places.csv 的 x/y 列。</p>
+    <p><strong id="pick-coord">—</strong></p>
+    <button type="button" class="btn btn-ghost" id="pick-copy">复制坐标</button>
+  </div>
+
+  <aside id="card" class="card" hidden aria-live="polite"></aside>
 
 </main>
 
@@ -65,38 +75,208 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162136"></script>
-<script src="./data/build.js?v=202611162136"></script>
-<script src="./assets/js/core.js?v=202611162136"></script>
+<script src="./data/points.js?v=202611162147"></script>
+<script src="./data/build.js?v=202611162147"></script>
+<script src="./assets/js/core.js?v=202611162147"></script>
 <script>
 (function () {
-  var data = window.SF.points();
-  var pins = document.getElementById('pins');
-  var count = document.getElementById('count');
+  var SF = window.SF;
+  var W = 1000, H = 620;
+  var MIN_S = 1, MAX_S = 6;
 
-  if (!data.length) return;
+  var svg = document.getElementById('map');
+  var pinLayer = document.getElementById('pins');
+  var cardHost = document.getElementById('card');
+  var shown = document.getElementById('shown');
+  var empty = document.getElementById('empty');
+  var pickDot = document.getElementById('pick-dot');
 
-  count.textContent = '已标注 ' + data.length + ' 个点位。';
+  var points = SF.points();
+  var view = { s: 1, cx: W / 2, cy: H / 2 };
+  var picking = false;
 
-  // 公开地图只画推荐和有条件推荐；不推荐的点位不在这一层出现
-  var marks = {
-    recommended: { glyph: '●', color: 'var(--ok)' },
-    conditional: { glyph: '▲', color: 'var(--warn)' }
-  };
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-  data.forEach(function (p) {
-    var m = marks[p.level];
-    var x = Number(p.x), y = Number(p.y);
-    if (!m || !isFinite(x) || !isFinite(y)) return;
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('tabindex', '0');
-    g.setAttribute('role', 'button');
-    g.setAttribute('aria-label', p.name + '，' + (window.SF.LEVELS[p.level].label));
-    g.innerHTML = '<text x="' + x + '" y="' + y + '" font-size="22" text-anchor="middle" ' +
-      'dominant-baseline="central" fill="' + m.color + '">' + m.glyph + '</text>';
-    g.addEventListener('click', function () { alert(p.name + '\n' + p.note); });
-    pins.appendChild(g);
+  var hasRecommended = points.some(function (p) { return p.level === 'recommended'; });
+
+  function visible(p) {
+    if (!hasRecommended) return true;
+    return view.s >= 1.6 || p.level === 'recommended';
+  }
+
+  function applyView() {
+    var vw = W / view.s;
+    var vh = H / view.s;
+    var x = clamp(view.cx - vw / 2, 0, W - vw);
+    var y = clamp(view.cy - vh / 2, 0, H - vh);
+    view.cx = x + vw / 2;
+    view.cy = y + vh / 2;
+    svg.setAttribute('viewBox', [x, y, vw, vh].join(' '));
+    drawPins();
+    updateLegend();
+  }
+
+  function updateLegend() {
+    var list = points.filter(visible);
+    var total = points.length;
+    if (!total) { shown.textContent = ''; return; }
+    shown.textContent = list.length === total
+      ? '当前显示全部 ' + total + ' 个点位'
+      : '当前显示 ' + list.length + ' 个（放大后显示其余 ' + (total - list.length) + ' 个）';
+  }
+
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function drawPins() {
+    pinLayer.innerHTML = '';
+    if (!points.length) { empty.hidden = false; return; }
+    empty.hidden = true;
+
+    var k = 1 / view.s;
+
+    points.filter(visible).forEach(function (p) {
+      var x = Number(p.x), y = Number(p.y);
+      if (!isFinite(x) || !isFinite(y)) return;
+
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'pin');
+      g.setAttribute('tabindex', '0');
+      g.setAttribute('role', 'button');
+      g.setAttribute('aria-label', p.name + '，' + (SF.LEVELS[p.level] || SF.LEVELS.no_data).label);
+
+      var color = p.level === 'recommended' ? 'var(--ok)' : 'var(--warn)';
+      var shape;
+
+      if (p.level === 'recommended') {
+        shape = document.createElementNS(NS, 'circle');
+        shape.setAttribute('cx', x);
+        shape.setAttribute('cy', y);
+        shape.setAttribute('r', 8 * k);
+        shape.setAttribute('fill', color);
+        shape.setAttribute('stroke', '#fff');
+        shape.setAttribute('stroke-width', 2 * k);
+      } else {
+        var d = 9 * k;
+        shape = document.createElementNS(NS, 'polygon');
+        shape.setAttribute('points',
+          x + ',' + (y - d) + ' ' + (x + d * 0.9) + ',' + (y + d * 0.7) + ' ' + (x - d * 0.9) + ',' + (y + d * 0.7));
+        shape.setAttribute('fill', color);
+        shape.setAttribute('stroke', '#fff');
+        shape.setAttribute('stroke-width', 2 * k);
+      }
+
+      g.appendChild(shape);
+      g.addEventListener('click', function () { showCard(p); });
+      g.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showCard(p); }
+      });
+      pinLayer.appendChild(g);
+    });
+  }
+
+  function showCard(p) {
+    var lv = SF.LEVELS[p.level] || SF.LEVELS.no_data;
+    var type = (SF.ENV_TYPES.filter(function (t) { return t.id === p.envType; })[0] || {}).name || '';
+    cardHost.innerHTML =
+      '<h2 style="margin:0 0 4px;font-size:1.0625rem">' + SF.esc(p.name) + '</h2>' +
+      '<p class="hint" style="margin:0">' + SF.esc(type) + ' · ' + SF.fmtDate(p.observedAt) + '</p>' +
+      '<p style="margin:10px 0 0"><span class="badge badge-' + lv.cls + '">' +
+      '<span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span></p>' +
+      SF.scoreBars(p.scores) +
+      '<p class="prose" style="margin:14px 0 0">' + SF.esc(p.note || lv.text) + '</p>';
+    cardHost.hidden = false;
+  }
+
+  function zoomAt(factor, relX, relY) {
+    var vw = W / view.s, vh = H / view.s;
+    var x0 = view.cx - vw / 2, y0 = view.cy - vh / 2;
+    var px = x0 + relX * vw, py = y0 + relY * vh;
+
+    var ns = clamp(view.s * factor, MIN_S, MAX_S);
+    if (ns === view.s) return;
+
+    var nvw = W / ns, nvh = H / ns;
+    view.s = ns;
+    view.cx = px + (0.5 - relX) * nvw;
+    view.cy = py + (0.5 - relY) * nvh;
+    applyView();
+  }
+
+  document.getElementById('zoom-in').addEventListener('click', function () { zoomAt(1.4, 0.5, 0.5); });
+  document.getElementById('zoom-out').addEventListener('click', function () { zoomAt(1 / 1.4, 0.5, 0.5); });
+  document.getElementById('zoom-reset').addEventListener('click', function () {
+    view = { s: 1, cx: W / 2, cy: H / 2 };
+    applyView();
   });
+
+  svg.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var r = svg.getBoundingClientRect();
+    zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+  }, { passive: false });
+
+  var drag = null;
+
+  svg.addEventListener('pointerdown', function (e) {
+    if (picking) return;
+    drag = { x: e.clientX, y: e.clientY, cx: view.cx, cy: view.cy };
+    svg.setPointerCapture(e.pointerId);
+    svg.classList.add('is-dragging');
+  });
+
+  svg.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var r = svg.getBoundingClientRect();
+    var vw = W / view.s, vh = H / view.s;
+    view.cx = drag.cx - (e.clientX - drag.x) * (vw / r.width);
+    view.cy = drag.cy - (e.clientY - drag.y) * (vh / r.height);
+    applyView();
+  });
+
+  function endDrag() { drag = null; svg.classList.remove('is-dragging'); }
+  svg.addEventListener('pointerup', endDrag);
+  svg.addEventListener('pointercancel', endDrag);
+
+  function toMap(e) {
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  if (/[?&]pick=1/.test(location.search)) {
+    var btn = document.getElementById('pick-toggle');
+    var panel = document.getElementById('pick-panel');
+    var coord = document.getElementById('pick-coord');
+
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      picking = !picking;
+      btn.textContent = picking ? '标点中' : '标点';
+      panel.hidden = !picking;
+      svg.classList.toggle('is-picking', picking);
+    });
+
+    svg.addEventListener('click', function (e) {
+      if (!picking) return;
+      var m = toMap(e);
+      var x = Math.round(m.x), y = Math.round(m.y);
+      coord.textContent = x + ', ' + y;
+      pickDot.setAttribute('cx', x);
+      pickDot.setAttribute('cy', y);
+      pickDot.setAttribute('r', 9 / view.s);
+      pickDot.setAttribute('stroke-width', 2 / view.s);
+    });
+
+    document.getElementById('pick-copy').addEventListener('click', function () {
+      if (navigator.clipboard) navigator.clipboard.writeText(coord.textContent);
+      var self = this;
+      self.textContent = '已复制';
+      setTimeout(function () { self.textContent = '复制坐标'; }, 1400);
+    });
+  }
+
+  applyView();
 })();
 </script>
 

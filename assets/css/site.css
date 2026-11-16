@@ -425,12 +425,49 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 .wrap-wide { max-width: 1440px; }
 
 .map-shell {
+  position: relative;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   overflow: hidden;
 }
-.map-shell svg { display: block; width: 100%; height: auto; min-height: 62vh; }
+.map-shell svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 52vh;
+  cursor: grab;
+  touch-action: none;
+}
+.map-shell svg.is-dragging { cursor: grabbing; }
+.map-shell svg.is-picking { cursor: crosshair; }
+
+.pin { cursor: pointer; outline: none; }
+.pin:focus-visible circle,
+.pin:focus-visible polygon { stroke: var(--accent); stroke-width: 3; }
+
+.map-tools {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+.map-tools button {
+  font: inherit;
+  font-size: .9375rem;
+  min-width: 38px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.map-tools button:hover { border-color: var(--ink-2); }
 
 .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0 0; padding: 0; list-style: none; font-size: .9375rem; color: var(--ink-2); }
 .legend .mark { margin-right: 6px; }
