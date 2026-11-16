@@ -36,6 +36,7 @@
 
 - 代码：MIT，见 `LICENSE`
 - 点位数据：CC BY 4.0
+- 底图 `assets/img/haigang.svg`：由 OpenStreetMap 数据渲染，© OpenStreetMap contributors，按 ODbL 1.0 使用。地图属于渲染作品，只署名、不再分发原始数据；如需重建，运行 `node scripts/build-map.mjs`（需要 Overpass 原始数据，不随仓库发布）。
 
 ## 边界
 
