@@ -45,6 +45,8 @@
       var bh = rotated ? Math.max(wMap * 0.35, hMap) : hMap;
 
       var box = { x1: l.x - bw / 2, x2: l.x + bw / 2, y1: l.y - bh / 2, y2: l.y + bh / 2 };
+      var pad = 2.5 / s; // 留一点缝，避免紧挨着也算不重叠
+      box.x1 -= pad; box.x2 += pad; box.y1 -= pad; box.y2 += pad;
       var hit = false;
       for (var j = 0; j < placed.length; j++) {
         var p = placed[j];

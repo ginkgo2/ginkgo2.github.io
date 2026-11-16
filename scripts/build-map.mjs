@@ -207,13 +207,19 @@ for (const el of poi.elements) {
   });
 }
 
-// 去重（同名同位置）
+// 去重：同名且位置相近的，只保留层级更靠前的那条（公园名在 t2 和 t3 各出现一次）
 const unique = [];
 const seen = new Set();
 for (const l of labels) {
   const key = l.n + '|' + Math.round(l.x) + '|' + Math.round(l.y);
   if (seen.has(key)) continue;
   seen.add(key);
+
+  const near = unique.find(u => u.n === l.n && Math.hypot(u.x - l.x, u.y - l.y) < 20);
+  if (near) {
+    if (l.t < near.t) Object.assign(near, l);
+    continue;
+  }
   unique.push(l);
 }
 
