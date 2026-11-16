@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162218">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162223">
 </head>
 <body data-page="map">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162218">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162223">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611162218">清单</a>
-      <a href="./map.html?v=202611162218" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611162218">工具箱</a>
-      <a href="./assess.html?v=202611162218">评估</a>
-      <a href="./method.html?v=202611162218">方法</a>
-      <a href="./data.html?v=202611162218">数据</a>
+      <a href="./list.html?v=202611162223">清单</a>
+      <a href="./map.html?v=202611162223" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611162223">工具箱</a>
+      <a href="./assess.html?v=202611162223">评估</a>
+      <a href="./method.html?v=202611162223">方法</a>
+      <a href="./data.html?v=202611162223">数据</a>
     </nav>
   </div>
 </header>
@@ -28,12 +28,13 @@
 
   <header class="page-head">
     <h1>地图</h1>
-    <p class="lead">拖动看周围，滚轮或按钮缩放。放大到 1.8 倍显示点位名称，再放大才显示“有条件推荐”。</p>
+    <p class="lead">拖动看周围，滚轮或按钮缩放。缩小看街道和镇的名字，放大看路名、公园和医院车站这些地点名。</p>
   </header>
 
   <div class="map-shell">
     <svg id="map" viewBox="0 0 1000 620" role="application" aria-label="海港区点位地图，可拖动和缩放">
       <image href="./assets/img/haigang.svg" x="0" y="0" width="1000" height="620"></image>
+      <g id="labels"></g>
       <g id="pins"></g>
       <circle id="pick-dot" cx="-99" cy="-99" r="0" fill="none" stroke="#9c3b30" stroke-width="0"></circle>
     </svg>
@@ -78,10 +79,12 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162218"></script>
-<script src="./data/landmarks.js?v=202611162218"></script>
-<script src="./data/build.js?v=202611162218"></script>
-<script src="./assets/js/core.js?v=202611162218"></script>
+<script src="./data/points.js?v=202611162223"></script>
+<script src="./data/landmarks.js?v=202611162223"></script>
+<script src="./data/labels.js?v=202611162223"></script>
+<script src="./data/build.js?v=202611162223"></script>
+<script src="./assets/js/core.js?v=202611162223"></script>
+<script src="./assets/js/maplabels.js?v=202611162223"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -116,8 +119,15 @@
     view.cx = x + vw / 2;
     view.cy = y + vh / 2;
     svg.setAttribute('viewBox', [x, y, vw, vh].join(' '));
+    renderLabels(x, y, vw, vh);
     drawPins();
     updateLegend();
+  }
+
+  function renderLabels(x, y, vw, vh) {
+    if (!window.SFML) return;
+    var layer = document.getElementById('labels');
+    SFML.render(layer, view.s, window.SF_LABELS || [], vw, vh, x, y);
   }
 
   function updateLegend() {
