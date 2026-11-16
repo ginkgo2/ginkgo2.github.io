@@ -61,6 +61,10 @@
         '</div>';
     }
 
+    if (d.id === 'crowd') {
+      extra = '<p class="hint" data-tool="crowd"></p>';
+    }
+
     return '<fieldset class="dim-block">' +
       '<div class="dim-head"><h3>' + SF.esc(d.name) + '</h3>' +
       '<span class="hint">' + SF.esc(d.hint) + '</span></div>' +
@@ -135,7 +139,7 @@
     if (e.target.type !== 'radio') return;
     renderResult();
   });
-  form.id.addEventListener('input', renderToolsNote);
+  form.id.addEventListener('input', function () { renderToolsNote(); suggestCrowd(); });
 
   /* ---------- 工具箱带入 ---------- */
 
@@ -180,6 +184,45 @@
     if (t.quietMin != null) parts.push('安静空间 ' + t.quietMin + ' 分钟');
     if (Array.isArray(t.windows) && t.windows.length) parts.push(t.windows.length + ' 个观察窗');
     note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
+  }
+
+  /* 人流是唯一能由工具直接定分的项：锚点就是人数区间；
+     噪声的指示值没校准，只显示参考，不代选。 */
+  function suggestCrowd() {
+    var host = form.querySelector('[data-tool="crowd"]');
+    if (!host) return;
+
+    var imp = importable(form.id.value.trim());
+    if (!imp.t || imp.t.crowdCount == null) { host.textContent = ''; return; }
+
+    var n = imp.t.crowdCount;
+    var q = imp.t.queueMin;
+    var peak = imp.t.peakInRoom;
+
+    var s = n < 10 ? 5 : n <= 25 ? 4 : n <= 45 ? 3 : n <= 60 ? 2 : 1;
+    var why = n + ' 人/5 分钟';
+
+    if (q != null && q > 10) {
+      s = 1;
+      why += '，排队 ' + q + ' 分钟';
+    } else if (q != null && q > 3 && s > 2) {
+      s = 2;
+      why += '，排队 ' + q + ' 分钟';
+    }
+    if (peak != null && peak >= 15 && s > 2) {
+      s = 2;
+      why += '，同时停留 ' + peak + ' 人';
+    }
+
+    var checked = form.querySelector('input[name="crowd"]:checked');
+    var auto = false;
+    if (!checked) {
+      var target = form.querySelector('input[name="crowd"][value="' + s + '"]');
+      if (target) { target.checked = true; auto = true; renderResult(); }
+    }
+
+    host.textContent = '来自工具箱：' + why + ' → 建议 ' + s + ' 分' +
+      (auto ? '（已自动选）' : '（已手动选过，保留你的）');
   }
 
   /* ---------- 草稿 ---------- */
@@ -291,4 +334,5 @@
   apply(SF.store(DRAFT_KEY));
   renderResult();
   renderToolsNote();
+  suggestCrowd();
 })();
