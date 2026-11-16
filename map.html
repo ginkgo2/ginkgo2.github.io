@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162147">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162151">
 </head>
 <body data-page="map">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162147">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162151">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611162147">清单</a>
-      <a href="./map.html?v=202611162147" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611162147">工具箱</a>
-      <a href="./assess.html?v=202611162147">评估</a>
-      <a href="./method.html?v=202611162147">方法</a>
-      <a href="./data.html?v=202611162147">数据</a>
+      <a href="./list.html?v=202611162151">清单</a>
+      <a href="./map.html?v=202611162151" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611162151">工具箱</a>
+      <a href="./assess.html?v=202611162151">评估</a>
+      <a href="./method.html?v=202611162151">方法</a>
+      <a href="./data.html?v=202611162151">数据</a>
     </nav>
   </div>
 </header>
@@ -28,7 +28,7 @@
 
   <header class="page-head">
     <h1>地图</h1>
-    <p class="lead">拖动看周围，滚轮或按钮缩放。放大到一定倍率才显示“有条件推荐”。</p>
+    <p class="lead">拖动看周围，滚轮或按钮缩放。放大到 1.8 倍显示点位名称，再放大才显示“有条件推荐”。</p>
   </header>
 
   <div class="map-shell">
@@ -75,9 +75,10 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162147"></script>
-<script src="./data/build.js?v=202611162147"></script>
-<script src="./assets/js/core.js?v=202611162147"></script>
+<script src="./data/points.js?v=202611162151"></script>
+<script src="./data/landmarks.js?v=202611162151"></script>
+<script src="./data/build.js?v=202611162151"></script>
+<script src="./assets/js/core.js?v=202611162151"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -129,10 +130,29 @@
 
   function drawPins() {
     pinLayer.innerHTML = '';
-    if (!points.length) { empty.hidden = false; return; }
-    empty.hidden = true;
-
     var k = 1 / view.s;
+    var marks = window.SF_LANDMARKS || [];
+
+    marks.forEach(function (m) {
+      if (!isFinite(Number(m.x)) || !isFinite(Number(m.y))) return;
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', m.x);
+      t.setAttribute('y', m.y);
+      t.setAttribute('font-size', 10 * k);
+      t.setAttribute('fill', 'var(--muted)');
+      t.setAttribute('stroke', 'var(--surface)');
+      t.setAttribute('stroke-width', 2.5 * k);
+      t.setAttribute('stroke-linejoin', 'round');
+      t.setAttribute('paint-order', 'stroke');
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('pointer-events', 'none');
+      t.setAttribute('class', 'landmark');
+      t.textContent = m.name;
+      pinLayer.appendChild(t);
+    });
+
+    if (!points.length) { empty.hidden = marks.length > 0; return; }
+    empty.hidden = true;
 
     points.filter(visible).forEach(function (p) {
       var x = Number(p.x), y = Number(p.y);
@@ -166,6 +186,22 @@
       }
 
       g.appendChild(shape);
+
+      if (view.s >= 1.8) {
+        var label = document.createElementNS(NS, 'text');
+        label.setAttribute('x', x + 12 * k);
+        label.setAttribute('y', y + 4 * k);
+        label.setAttribute('font-size', 11 * k);
+        label.setAttribute('fill', 'var(--ink)');
+        label.setAttribute('stroke', 'var(--surface)');
+        label.setAttribute('stroke-width', 3 * k);
+        label.setAttribute('stroke-linejoin', 'round');
+        label.setAttribute('paint-order', 'stroke');
+        label.setAttribute('pointer-events', 'none');
+        label.textContent = p.name;
+        g.appendChild(label);
+      }
+
       g.addEventListener('click', function () { showCard(p); });
       g.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showCard(p); }
