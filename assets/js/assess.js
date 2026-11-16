@@ -106,9 +106,48 @@
       envType: form.envType.value,
       scenario: form.scenario.value,
       observedAt: form.observedAt.value ? form.observedAt.value + ':00+08:00' : '',
+      x: pos ? pos.x : null,
+      y: pos ? pos.y : null,
       note: form.note.value.trim()
     };
   }
+
+  /* ---------- 位置 ---------- */
+
+  var pos = null;
+  var pickerApi = null;
+
+  function updatePosText() {
+    var el = document.getElementById('pick-val');
+    if (el) el.textContent = pos ? '坐标：' + pos.x + ', ' + pos.y : '坐标：未选';
+  }
+
+  function setPos(x, y) {
+    pos = { x: x, y: y };
+    updatePosText();
+  }
+
+  var pickWrap = document.getElementById('pick-wrap');
+  var pickOpen = document.getElementById('pick-open');
+
+  pickOpen.addEventListener('click', function () {
+    var show = pickWrap.hidden;
+    pickWrap.hidden = !show;
+    pickOpen.textContent = show ? '收起地图' : '在地图上选位置';
+
+    if (show && !pickerApi) {
+      pickerApi = window.SFPicker(document.getElementById('picker'), {
+        onPick: function (x, y) { setPos(x, y); }
+      });
+      if (pos) pickerApi.setValue(pos.x, pos.y);
+    }
+  });
+
+  document.getElementById('pick-clear').addEventListener('click', function () {
+    pos = null;
+    if (pickerApi) pickerApi.clear();
+    updatePosText();
+  });
 
   /* ---------- 结果 ---------- */
 
@@ -286,6 +325,12 @@
       });
     }
 
+    if (p.x != null && p.y != null) {
+      pos = { x: p.x, y: p.y };
+      updatePosText();
+      if (pickerApi) pickerApi.setValue(p.x, p.y);
+    }
+
     renderResult();
   }
 
@@ -298,6 +343,9 @@
     if (!confirm('清空当前内容？草稿也会一起清掉。')) return;
     form.reset();
     form.observedAt.value = SF.nowLocal();
+    pos = null;
+    if (pickerApi) pickerApi.clear();
+    updatePosText();
     try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* 忽略 */ }
     renderResult();
   });

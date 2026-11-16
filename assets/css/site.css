@@ -616,3 +616,21 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 .refs { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; max-width: var(--prose); }
 .refs li { font-size: .9375rem; color: var(--ink-2); }
 .refs .ref-note { color: var(--muted); font-size: .875rem; margin: 10px 0 0; }
+/* ---------- 评估页选点器 ---------- */
+
+.picker {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+.picker svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+.picker svg.is-dragging { cursor: grabbing; }
+.picker .map-tools { top: 8px; right: 8px; }

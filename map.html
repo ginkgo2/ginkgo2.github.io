@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162151">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162159">
 </head>
 <body data-page="map">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162151">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162159">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611162151">清单</a>
-      <a href="./map.html?v=202611162151" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611162151">工具箱</a>
-      <a href="./assess.html?v=202611162151">评估</a>
-      <a href="./method.html?v=202611162151">方法</a>
-      <a href="./data.html?v=202611162151">数据</a>
+      <a href="./list.html?v=202611162159">清单</a>
+      <a href="./map.html?v=202611162159" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611162159">工具箱</a>
+      <a href="./assess.html?v=202611162159">评估</a>
+      <a href="./method.html?v=202611162159">方法</a>
+      <a href="./data.html?v=202611162159">数据</a>
     </nav>
   </div>
 </header>
@@ -42,6 +42,7 @@
       <button type="button" id="zoom-in" aria-label="放大">＋</button>
       <button type="button" id="zoom-out" aria-label="缩小">－</button>
       <button type="button" id="zoom-reset">复位</button>
+      <button type="button" id="export-png">导出图片</button>
       <button type="button" id="pick-toggle" hidden>标点</button>
     </div>
   </div>
@@ -75,10 +76,10 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162151"></script>
-<script src="./data/landmarks.js?v=202611162151"></script>
-<script src="./data/build.js?v=202611162151"></script>
-<script src="./assets/js/core.js?v=202611162151"></script>
+<script src="./data/points.js?v=202611162159"></script>
+<script src="./data/landmarks.js?v=202611162159"></script>
+<script src="./data/build.js?v=202611162159"></script>
+<script src="./assets/js/core.js?v=202611162159"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -272,6 +273,93 @@
   function endDrag() { drag = null; svg.classList.remove('is-dragging'); }
   svg.addEventListener('pointerup', endDrag);
   svg.addEventListener('pointercancel', endDrag);
+
+  /* ---------- 导出当前视图 ---------- */
+
+  document.getElementById('export-png').addEventListener('click', function () {
+    var btn = this;
+    btn.textContent = '导出中…';
+
+    var vw = W / view.s, vh = H / view.s;
+    var x0 = view.cx - vw / 2, y0 = view.cy - vh / 2;
+
+    var img = new Image();
+    img.onload = function () {
+      var cw = 1600;
+      var ch = Math.round(cw * vh / vw);
+      var canvas = document.createElement('canvas');
+      canvas.width = cw;
+      canvas.height = ch;
+      var ctx = canvas.getContext('2d');
+      var sx = cw / vw, sy = ch / vh;
+
+      ctx.fillStyle = '#f7f5f1';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(img, x0, y0, vw, vh, 0, 0, cw, ch);
+
+      (window.SF_LANDMARKS || []).forEach(function (m) {
+        var x = (m.x - x0) * sx, y = (m.y - y0) * sy;
+        ctx.font = '18px system-ui, "Microsoft YaHei", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(255,255,255,.9)';
+        ctx.strokeText(m.name, x, y);
+        ctx.fillStyle = '#5b5b56';
+        ctx.fillText(m.name, x, y);
+      });
+
+      points.filter(visible).forEach(function (p) {
+        var x = (p.x - x0) * sx, y = (p.y - y0) * sy;
+        var color = p.level === 'recommended' ? '#2f6f4a' : '#8a6412';
+
+        ctx.beginPath();
+        if (p.level === 'recommended') {
+          ctx.arc(x, y, 9, 0, Math.PI * 2);
+        } else {
+          ctx.moveTo(x, y - 11);
+          ctx.lineTo(x + 10, y + 7);
+          ctx.lineTo(x - 10, y + 7);
+          ctx.closePath();
+        }
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+
+        ctx.font = '19px system-ui, "Microsoft YaHei", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = 'rgba(255,255,255,.95)';
+        ctx.strokeText(p.name, x + 15, y + 6);
+        ctx.fillStyle = '#1c1c1a';
+        ctx.fillText(p.name, x + 15, y + 6);
+      });
+
+      ctx.font = '20px system-ui, "Microsoft YaHei", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#45443f';
+      ctx.fillText('感官友好评估 · 海港区', 24, ch - 46);
+      ctx.font = '16px system-ui, "Microsoft YaHei", sans-serif';
+      ctx.fillStyle = '#6b6a64';
+      ctx.fillText(new Date().toISOString().slice(0, 10) + ' · 显示 ' +
+        points.filter(visible).length + ' 个点位', 24, ch - 20);
+
+      canvas.toBlob(function (blob) {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = '感官友好地图-' + new Date().toISOString().slice(0, 10) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+        btn.textContent = '导出图片';
+      }, 'image/png');
+    };
+
+    img.onerror = function () { btn.textContent = '导出图片'; };
+    img.src = './assets/img/haigang.svg';
+  });
 
   function toMap(e) {
     var pt = svg.createSVGPoint();

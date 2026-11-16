@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>评估 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162151">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162159">
 </head>
 <body data-page="assess">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162151">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162159">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611162151">清单</a>
-    <a href="./map.html?v=202611162151">地图</a>
-    <a href="./tools.html?v=202611162151">工具箱</a>
-    <a href="./assess.html?v=202611162151" aria-current="page">评估</a>
-    <a href="./method.html?v=202611162151">方法</a>
-    <a href="./data.html?v=202611162151">数据</a>
+    <a href="./list.html?v=202611162159">清单</a>
+    <a href="./map.html?v=202611162159">地图</a>
+    <a href="./tools.html?v=202611162159">工具箱</a>
+    <a href="./assess.html?v=202611162159" aria-current="page">评估</a>
+    <a href="./method.html?v=202611162159">方法</a>
+    <a href="./data.html?v=202611162159">数据</a>
   </nav>
   </div>
 </header>
@@ -56,6 +56,21 @@
           <span>观察时间</span>
           <input type="datetime-local" name="observedAt">
         </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>位置</h2>
+      <p class="hint">在图上点一下，坐标跟着评估一起导出。不选也行，这个点就不会出现在地图上。</p>
+      <div class="actions" style="margin-top:12px">
+        <button type="button" class="btn btn-ghost" id="pick-open">在地图上选位置</button>
+      </div>
+      <div id="pick-wrap" hidden style="margin-top:14px">
+        <div id="picker" class="picker"></div>
+        <p class="hint" id="pick-val">坐标：未选</p>
+        <div class="actions" style="margin-top:10px">
+          <button type="button" class="btn btn-ghost" id="pick-clear">清除位置</button>
+        </div>
       </div>
     </section>
 
@@ -100,10 +115,12 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162151"></script>
-<script src="./data/build.js?v=202611162151"></script>
-<script src="./assets/js/core.js?v=202611162151"></script>
-<script src="./assets/js/assess.js?v=202611162151"></script>
+<script src="./data/points.js?v=202611162159"></script>
+<script src="./data/landmarks.js?v=202611162159"></script>
+<script src="./data/build.js?v=202611162159"></script>
+<script src="./assets/js/core.js?v=202611162159"></script>
+<script src="./assets/js/picker.js?v=202611162159"></script>
+<script src="./assets/js/assess.js?v=202611162159"></script>
 
 </body>
 </html>
