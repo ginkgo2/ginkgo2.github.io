@@ -162,6 +162,32 @@
       lv.glyph + '</span>' + esc(lv.label) + '</span>';
   }
 
+  /* 六项分条：只标唯一最弱项，不给平均分 */
+  function scoreBars(scores) {
+    scores = scores || {};
+    var vals = DIMS.map(function (d) {
+      var v = scores[d.id];
+      return v == null ? null : Number(v);
+    }).filter(function (v) { return v != null; });
+
+    var min = vals.length ? Math.min.apply(null, vals) : null;
+    var uniqueMin = min != null && vals.filter(function (v) { return v === min; }).length === 1;
+
+    return '<ul class="bars">' + DIMS.map(function (d) {
+      var raw = scores[d.id];
+      var v = raw == null ? null : Number(raw);
+      var cls = v == null ? 'none' : v <= 2 ? 'bad' : v === 3 ? 'warn' : 'ok';
+      var weak = uniqueMin && v === min ? ' is-weak' : '';
+      var pct = v == null ? 0 : v / 5 * 100;
+
+      return '<li class="bar-row' + weak + '">' +
+        '<span class="bar-label">' + esc(d.name) + '</span>' +
+        '<span class="bar-track"><span class="bar-fill fill-' + cls + '" style="width:' + pct + '%"></span></span>' +
+        '<span class="bar-score">' + (v == null ? '—' : v) + '</span>' +
+        '</li>';
+    }).join('') + '</ul>';
+  }
+
   function store(key, value) {
     try {
       if (value === undefined) {
@@ -212,6 +238,7 @@
     nowLocal: nowLocal,
     fmtDate: fmtDate,
     badge: badge,
+    scoreBars: scoreBars,
     store: store,
     points: points
   };

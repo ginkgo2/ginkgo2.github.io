@@ -547,3 +547,35 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 @media (max-width: 760px) {
   .field-row { grid-template-columns: 1fr; }
 }
+/* ---------- 六项分条 ---------- */
+
+.bars { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 7px; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 6.5em 1fr 1.8em;
+  align-items: center;
+  gap: 10px;
+  font-size: .875rem;
+}
+.bar-label { color: var(--ink-2); }
+.bar-track {
+  display: block;
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar-fill { display: block; height: 100%; border-radius: 999px; }
+.fill-ok { background: var(--ok); }
+.fill-warn { background: var(--warn); }
+.fill-bad { background: var(--bad); }
+.fill-none { background: transparent; }
+.bar-score { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar-row.is-weak .bar-label,
+.bar-row.is-weak .bar-score { color: var(--bad); font-weight: 600; }
+
+/* ---------- 参考链接 ---------- */
+
+.refs { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; max-width: var(--prose); }
+.refs li { font-size: .9375rem; color: var(--ink-2); }
+.refs .ref-note { color: var(--muted); font-size: .875rem; margin: 10px 0 0; }

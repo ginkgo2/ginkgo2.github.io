@@ -132,6 +132,9 @@
       '<span class="badge badge-' + lv.cls + '"><span class="glyph" aria-hidden="true">' +
       lv.glyph + '</span>' + lv.label + '</span>' +
       '<span class="result-text">' + SF.esc(text) + '</span>';
+
+    var bars = document.getElementById('result-bars');
+    if (bars) bars.innerHTML = filled ? SF.scoreBars(scores) : '';
   }
 
   form.addEventListener('change', renderResult);

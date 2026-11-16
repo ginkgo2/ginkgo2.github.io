@@ -253,6 +253,8 @@ for (const place of places) {
     y: place.y,
     observedAt: primary.observedAt,
     level,
+    scores: primary.scores || {},
+    missing: primary.missing || [],
     note: primary.note || '',
     status: 'verified'
   });

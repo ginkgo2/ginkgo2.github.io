@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>清单 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611162054">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611162136">
 </head>
 <body data-page="list">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611162054">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611162136">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611162054" aria-current="page">清单</a>
-    <a href="./map.html?v=202611162054">地图</a>
-    <a href="./tools.html?v=202611162054">工具箱</a>
-    <a href="./assess.html?v=202611162054">评估</a>
-    <a href="./method.html?v=202611162054">方法</a>
-    <a href="./data.html?v=202611162054">数据</a>
+    <a href="./list.html?v=202611162136" aria-current="page">清单</a>
+    <a href="./map.html?v=202611162136">地图</a>
+    <a href="./tools.html?v=202611162136">工具箱</a>
+    <a href="./assess.html?v=202611162136">评估</a>
+    <a href="./method.html?v=202611162136">方法</a>
+    <a href="./data.html?v=202611162136">数据</a>
   </nav>
   </div>
 </header>
@@ -47,9 +47,9 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611162054"></script>
-<script src="./data/build.js?v=202611162054"></script>
-<script src="./assets/js/core.js?v=202611162054"></script>
+<script src="./data/points.js?v=202611162136"></script>
+<script src="./data/build.js?v=202611162136"></script>
+<script src="./assets/js/core.js?v=202611162136"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -85,9 +85,10 @@
     return '<article class="card">' +
       '<div class="dim-head"><h2 style="margin:0;font-size:1.0625rem">' + SF.esc(p.name) + '</h2>' +
       '<span class="hint">' + SF.esc(type) + ' · ' + SF.fmtDate(p.observedAt) + '</span></div>' +
-      '<p style="margin:10px 0 6px"><span class="badge badge-' + lv.cls + '">' +
+      '<p style="margin:10px 0 0"><span class="badge badge-' + lv.cls + '">' +
       '<span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span></p>' +
-      '<p class="prose" style="margin:0">' + SF.esc(p.note || lv.text) + '</p>' +
+      SF.scoreBars(p.scores) +
+      '<p class="prose" style="margin:14px 0 0">' + SF.esc(p.note || lv.text) + '</p>' +
       '</article>';
   }
 
