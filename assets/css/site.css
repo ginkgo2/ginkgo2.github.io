@@ -712,7 +712,6 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 .map-wrap .map-tools { top: 10px; right: 10px; }
 /* ---------- 地图页加宽、按钮改到左上 ---------- */
 
-body[data-page="map"] { --wrap: 1600px; }
 body[data-page="map"] .ml-shell { height: 74vh; }
 .map-wrap .map-tools { top: 10px; left: 10px; right: auto; }
 
@@ -821,28 +820,3 @@ p { margin: 0 0 var(--sp-3); }
 .card > h2:first-child { margin-top: 0; }
 .card > h2 { margin-top: var(--sp-5); }
 
-.page-head { margin-bottom: var(--sp-4); }
-/* 地图页留出页边距 */
-body[data-page="map"] .wrap {
-  padding-left: 40px;
-  padding-right: 40px;
-}
-@media (max-width: 760px) {
-  body[data-page="map"] .wrap {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-/* 地图页留出明显的页边距 */
-body[data-page="map"] { --wrap: 1440px; }
-body[data-page="map"] .wrap {
-  padding-left: 48px;
-  padding-right: 48px;
-}
-@media (max-width: 760px) {
-  body[data-page="map"] { --wrap: 100%; }
-  body[data-page="map"] .wrap {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
