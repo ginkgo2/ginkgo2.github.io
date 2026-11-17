@@ -30,7 +30,7 @@
 
     (async function () {
       var ml = await import('./assets/vendor/maplibre/maplibre-gl.mjs');
-      st = await import('./assets/js/map-style.mjs');
+      st = await import('./assets/js/map-style.mjs?v=202611171725');
 
       host.innerHTML = '';
       map = new ml.Map({

@@ -96,8 +96,8 @@ export function addLayers(map, z0, data) {
   const zDark = zBldSmall;
 
   const bPaint = {
-    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f1ede6', zDark, '#e2ddcf'],
-    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#e9e4dc', zDark, '#d2cbbb']
+    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#faf7f1', zDark, '#e2ddcf'],
+    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f2eee6', zDark, '#d2cbbb']
   };
 
   map.addLayer({
