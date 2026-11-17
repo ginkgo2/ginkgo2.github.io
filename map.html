@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171659">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171659">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171704">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171704">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171659">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171704">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611171659">清单</a>
-      <a href="./map.html?v=202611171659" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611171659">工具箱</a>
-      <a href="./assess.html?v=202611171659">评估</a>
-      <a href="./method.html?v=202611171659">方法</a>
-      <a href="./data.html?v=202611171659">数据</a>
+      <a href="./list.html?v=202611171704">清单</a>
+      <a href="./map.html?v=202611171704" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611171704">工具箱</a>
+      <a href="./assess.html?v=202611171704">评估</a>
+      <a href="./method.html?v=202611171704">方法</a>
+      <a href="./data.html?v=202611171704">数据</a>
     </nav>
   </div>
 </header>
@@ -75,30 +75,18 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171659"></script>
-<script src="./data/landmarks.js?v=202611171659"></script>
-<script src="./data/labels.js?v=202611171659"></script>
-<script src="./data/labels-detail.js?v=202611171659"></script>
-<script src="./data/build.js?v=202611171659"></script>
-<script src="./assets/js/core.js?v=202611171659"></script>
+<script src="./data/points.js?v=202611171704"></script>
+<script src="./data/landmarks.js?v=202611171704"></script>
+<script src="./data/labels.js?v=202611171704"></script>
+<script src="./data/labels-detail.js?v=202611171704"></script>
+<script src="./data/build.js?v=202611171704"></script>
+<script src="./assets/js/core.js?v=202611171704"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadData, addLayers } from './assets/js/map-style.mjs';
 
 const SF = window.SF;
-const BBOX = { s: 39.878, w: 119.515, n: 39.958, e: 119.683 };
-const W = 1000, H = 620;
-
-const lat0 = (BBOX.s + BBOX.n) / 2;
-const kx = Math.cos(lat0 * Math.PI / 180);
-const dx = (BBOX.e - BBOX.w) * kx;
-const dy = BBOX.n - BBOX.s;
-const scale = Math.min(W / dx, H / dy);
-const offX = (W - dx * scale) / 2;
-const offY = (H - dy * scale) / 2;
-
-const toLngLat = (x, y) => [BBOX.w + (x - offX) / (kx * scale), BBOX.n - (y - offY) / scale];
-const toXY = (lng, lat) => [(lng - BBOX.w) * kx * scale + offX, (BBOX.n - lat) * scale + offY];
 
 const points = SF.points();
 const hasRecommended = points.some(p => p.level === 'recommended');
@@ -109,12 +97,8 @@ const empty = document.getElementById('empty');
 
 const map = new maplibregl.Map({
   container: 'map',
-  style: {
-    version: 8,
-    sources: {},
-    layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#f7f5f1' } }]
-  },
-  bounds: [[BBOX.w, BBOX.s], [BBOX.e, BBOX.n]],
+  style: emptyStyle(),
+  bounds: BOUNDS,
   fitBoundsOptions: { padding: 10 },
   attributionControl: false,
   dragRotate: false,
@@ -129,79 +113,8 @@ let z0 = 13;
 
 map.on('load', async () => {
   z0 = map.getZoom();
-
-  const [base, detail] = await Promise.all([
-    fetch('./data/map-base.geojson').then(r => r.json()),
-    fetch('./data/map-detail.geojson').then(r => r.json())
-  ]);
-
-  map.addSource('base', { type: 'geojson', data: base });
-  map.addSource('detail', { type: 'geojson', data: detail });
-
-  map.addLayer({ id: 'water', type: 'fill', source: 'base', filter: ['==', ['get', 'kind'], 'water'], paint: { 'fill-color': '#d5e7f0' } });
-  map.addLayer({ id: 'park', type: 'fill', source: 'base', filter: ['==', ['get', 'kind'], 'park'], paint: { 'fill-color': '#dfeada' } });
-
-  const widths = { motorway: 3.8, trunk: 3.3, primary: 2.6, secondary: 1.9, tertiary: 1.3 };
-  const colors = { motorway: '#efc469', trunk: '#f3d39a', primary: '#fbe7c2', secondary: '#ffffff', tertiary: '#ffffff' };
-  const casings = { motorway: '#dcb877', trunk: '#ddc49a', primary: '#ddd0b6', secondary: '#ded8cc', tertiary: '#e6e1d7' };
-
-  for (const cls of ['tertiary', 'secondary', 'primary', 'trunk', 'motorway']) {
-    map.addLayer({
-      id: 'road-c-' + cls, type: 'line', source: 'base',
-      filter: ['all', ['==', ['get', 'kind'], 'road'], ['==', ['get', 'cls'], cls]],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: {
-        'line-color': casings[cls],
-        'line-width': ['interpolate', ['linear'], ['zoom'], z0 - 1, widths[cls] + 1.1, z0 + 4, (widths[cls] + 1.1) * 1.9]
-      }
-    });
-    map.addLayer({
-      id: 'road-f-' + cls, type: 'line', source: 'base',
-      filter: ['all', ['==', ['get', 'kind'], 'road'], ['==', ['get', 'cls'], cls]],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: {
-        'line-color': colors[cls],
-        'line-width': ['interpolate', ['linear'], ['zoom'], z0 - 1, widths[cls], z0 + 4, widths[cls] * 1.9]
-      }
-    });
-  }
-
-  map.addLayer({
-    id: 'minor-casing', type: 'line', source: 'detail', minzoom: z0 + 1.2,
-    filter: ['==', ['get', 'kind'], 'minor'],
-    layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#d8d2c4', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.2, 1.6, z0 + 5, 3.4] }
-  });
-  map.addLayer({
-    id: 'minor', type: 'line', source: 'detail', minzoom: z0 + 1.2,
-    filter: ['==', ['get', 'kind'], 'minor'],
-    layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.2, 1.0, z0 + 5, 2.4] }
-  });
-
-  // 建筑按面积分三档：大的先出现，小的后出现
-  const bPaint = { 'fill-color': '#e2ddcf', 'fill-outline-color': '#d2cbbb' };
-  map.addLayer({
-    id: 'bld-big', type: 'fill', source: 'detail', minzoom: z0 + 0.9,
-    filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 1500]],
-    paint: bPaint
-  });
-  map.addLayer({
-    id: 'bld-mid', type: 'fill', source: 'detail', minzoom: z0 + 1.6,
-    filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 400], ['<', ['get', 'a'], 1500]],
-    paint: bPaint
-  });
-  map.addLayer({
-    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 2.2,
-    filter: ['all', ['==', ['get', 'kind'], 'building'], ['<', ['get', 'a'], 400]],
-    paint: bPaint
-  });
-
-  map.addLayer({
-    id: 'gate', type: 'circle', source: 'detail', minzoom: z0 + 2.0,
-    filter: ['==', ['get', 'kind'], 'gate'],
-    paint: { 'circle-color': '#a03b2f', 'circle-radius': ['interpolate', ['linear'], ['zoom'], z0 + 2, 3, z0 + 5, 6], 'circle-stroke-color': '#fff', 'circle-stroke-width': 1 }
-  });
+  const data = await loadData();
+  addLayers(map, z0, data);
 
   startOverlay();
   updateLegend();
