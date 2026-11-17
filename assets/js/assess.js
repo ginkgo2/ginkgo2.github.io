@@ -105,7 +105,8 @@
       name: form.name.value.trim(),
       envType: form.envType.value,
       scenario: form.scenario.value,
-      observedAt: form.observedAt.value ? form.observedAt.value + ':00+08:00' : '',
+      observedAt: SF.toIsoOffset(form.observedAt.value),
+      rater: form.rater.value.trim(),
       x: pos ? pos.x : null,
       y: pos ? pos.y : null,
       note: form.note.value.trim()
@@ -414,6 +415,7 @@
     form.envType.value = p.envType || 'daily';
     form.scenario.value = p.scenario || 'indoor';
     form.observedAt.value = (p.observedAt || '').slice(0, 16);
+    form.rater.value = p.rater || '';
     form.note.value = p.note || '';
     SF.DIMS.forEach(function (d) {
       var v = p.scores && p.scores[d.id];

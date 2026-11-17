@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { toLngLat } from './map-config.mjs';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -245,12 +246,16 @@ for (const place of places) {
   }
   if (place.x == null || place.y == null) warn(`${place.id} 没有坐标，地图上不会出现`);
 
+  const ll = place.x != null && place.y != null ? toLngLat(place.x, place.y) : null;
+
   publicPoints.push({
     id: place.id,
     name: place.name,
     envType: place.envType,
     x: place.x,
     y: place.y,
+    lng: ll ? +ll[0].toFixed(6) : null,
+    lat: ll ? +ll[1].toFixed(6) : null,
     observedAt: primary.observedAt,
     level,
     scores: primary.scores || {},

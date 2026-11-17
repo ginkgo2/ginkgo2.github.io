@@ -750,3 +750,75 @@ body[data-page="map"] .ml-shell { height: 74vh; }
 /* 顶部和底部通栏：不随页面版心宽度变化而左右跳 */
 .site-head .wrap,
 .site-foot .wrap { max-width: none; }
+/* ---------- 设计变量与排版 ---------- */
+
+:root {
+  --fs-xs: .8125rem;
+  --fs-sm: .9375rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.3125rem;
+  --fs-2xl: clamp(1.5rem, 2.4vw, 1.875rem);
+  --fs-3xl: clamp(1.9rem, 3.6vw, 2.5rem);
+
+  --lh-tight: 1.28;
+  --lh-base: 1.7;
+
+  --sp-1: 6px;
+  --sp-2: 10px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 36px;
+  --sp-6: 56px;
+
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+}
+
+body {
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin: 0 0 var(--sp-2);
+}
+
+h2 {
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.01em;
+  margin: var(--sp-5) 0 var(--sp-2);
+}
+
+h3 {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-tight);
+  margin: var(--sp-4) 0 var(--sp-1);
+}
+
+p { margin: 0 0 var(--sp-3); }
+
+.lead {
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.hint {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.card {
+  padding: var(--sp-4);
+  margin: var(--sp-3) 0;
+}
+
+.card > h2:first-child { margin-top: 0; }
+.card > h2 { margin-top: var(--sp-5); }
+
+.page-head { margin-bottom: var(--sp-4); }

@@ -82,7 +82,7 @@
   ];
 
   var LEVELS = {
-    recommended: { label: '推荐', cls: 'ok', glyph: '●', text: '六项都在 4 分以上' },
+    recommended: { label: '推荐', cls: 'ok', glyph: '●', text: '六项都至少 4 分' },
     conditional: { label: '有条件推荐', cls: 'warn', glyph: '▲', text: '最低的一项是 3 分，要把条件写出来' },
     not_recommended: { label: '不推荐', cls: 'bad', glyph: '■', text: '有项目在 2 分或以下' },
     no_data: { label: '暂无数据', cls: 'none', glyph: '○', text: '缺两项以上，不建议下结论' }
@@ -149,6 +149,18 @@
     var d = new Date();
     return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
       'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  // 表单里的本地时间转成带时区偏移的 ISO 字符串
+  function toIsoOffset(local) {
+    if (!local) return '';
+    var d = new Date(local);
+    if (isNaN(d)) return '';
+    var off = -d.getTimezoneOffset();
+    var sign = off >= 0 ? '+' : '-';
+    var hh = Math.floor(Math.abs(off) / 60);
+    var mm = Math.abs(off) % 60;
+    return local + ':00' + sign + pad(hh) + ':' + pad(mm);
   }
 
   function fmtDate(iso) {
@@ -247,6 +259,7 @@
     $$: $$,
     esc: esc,
     nowLocal: nowLocal,
+    toIsoOffset: toIsoOffset,
     fmtDate: fmtDate,
     badge: badge,
     scoreBars: scoreBars,

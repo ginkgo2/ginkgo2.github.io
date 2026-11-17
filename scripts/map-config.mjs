@@ -18,3 +18,11 @@ export function proj(lat, lon) {
     +(((BBOX.n - lat) * scale) + offY).toFixed(1)
   ];
 }
+
+// 像素坐标反算经纬度，给合并脚本用
+export function toLngLat(x, y) {
+  return [
+    BBOX.w + (x - offX) / (kx * scale),
+    BBOX.n - (y - offY) / scale
+  ];
+}
