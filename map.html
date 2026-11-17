@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171106">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171123">
 </head>
 <body data-page="map">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171106">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171123">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611171106">清单</a>
-      <a href="./map.html?v=202611171106" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611171106">工具箱</a>
-      <a href="./assess.html?v=202611171106">评估</a>
-      <a href="./method.html?v=202611171106">方法</a>
-      <a href="./data.html?v=202611171106">数据</a>
+      <a href="./list.html?v=202611171123">清单</a>
+      <a href="./map.html?v=202611171123" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611171123">工具箱</a>
+      <a href="./assess.html?v=202611171123">评估</a>
+      <a href="./method.html?v=202611171123">方法</a>
+      <a href="./data.html?v=202611171123">数据</a>
     </nav>
   </div>
 </header>
@@ -28,8 +28,12 @@
 
   <header class="page-head">
     <h1>地图</h1>
-    <p class="lead">拖动看周围，滚轮或按钮缩放。缩小看街道和镇的名字，放大看路名、公园和医院车站这些地点名。</p>
   </header>
+
+  <div class="map-search">
+    <input type="search" id="q" placeholder="搜索地名、路名、医院、学校" autocomplete="off" aria-label="搜索地图上的名字">
+    <ul id="q-list" class="q-list" hidden></ul>
+  </div>
 
   <div class="map-shell">
     <svg id="map" viewBox="0 0 1000 620" role="application" aria-label="海港区点位地图，可拖动和缩放">
@@ -79,12 +83,12 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171106"></script>
-<script src="./data/landmarks.js?v=202611171106"></script>
-<script src="./data/labels.js?v=202611171106"></script>
-<script src="./data/build.js?v=202611171106"></script>
-<script src="./assets/js/core.js?v=202611171106"></script>
-<script src="./assets/js/maplabels.js?v=202611171106"></script>
+<script src="./data/points.js?v=202611171123"></script>
+<script src="./data/landmarks.js?v=202611171123"></script>
+<script src="./data/labels.js?v=202611171123"></script>
+<script src="./data/build.js?v=202611171123"></script>
+<script src="./assets/js/core.js?v=202611171123"></script>
+<script src="./assets/js/maplabels.js?v=202611171123"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -411,6 +415,67 @@
       setTimeout(function () { self.textContent = '复制坐标'; }, 1400);
     });
   }
+
+  /* ---------- 搜索 ---------- */
+
+  (function search() {
+    var input = document.getElementById('q');
+    var list = document.getElementById('q-list');
+    if (!input || !list) return;
+
+    var index = (window.SF_LABELS || []).slice();
+    points.forEach(function (p) {
+      if (p.x != null && p.y != null) index.push({ n: p.name, x: p.x, y: p.y, t: 0 });
+    });
+
+    var hits = [];
+
+    function focusOn(x, y) {
+      view.cx = x;
+      view.cy = y;
+      view.s = Math.max(view.s, 3);
+      applyView();
+      list.hidden = true;
+    }
+
+    function render(q) {
+      var v = q.trim();
+      if (!v) { list.hidden = true; list.innerHTML = ''; return; }
+
+      hits = index.filter(function (l) { return l.n && l.n.indexOf(v) >= 0; }).slice(0, 8);
+      if (!hits.length) {
+        list.innerHTML = '<li class="q-empty">没找到</li>';
+        list.hidden = false;
+        return;
+      }
+
+      list.innerHTML = hits.map(function (h, i) {
+        return '<li><button type="button" data-i="' + i + '">' + SF.esc(h.n) + '</button></li>';
+      }).join('');
+      list.hidden = false;
+    }
+
+    input.addEventListener('input', function () { render(input.value); });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && hits.length) {
+        e.preventDefault();
+        focusOn(hits[0].x, hits[0].y);
+      }
+      if (e.key === 'Escape') { list.hidden = true; }
+    });
+
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      var h = hits[Number(btn.getAttribute('data-i'))];
+      if (h) focusOn(h.x, h.y);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.map-search')) list.hidden = true;
+    });
+  })();
 
   applyView();
 })();

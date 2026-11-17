@@ -634,3 +634,42 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 }
 .picker svg.is-dragging { cursor: grabbing; }
 .picker .map-tools { top: 8px; right: 8px; }
+/* ---------- 地图搜索 ---------- */
+
+.map-search { position: relative; margin: 0 0 16px; max-width: 420px; }
+.map-search input {
+  width: 100%;
+  font: inherit;
+  padding: 9px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.q-list {
+  position: absolute;
+  z-index: 30;
+  left: 0; right: 0;
+  top: calc(100% + 4px);
+  margin: 0; padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  max-height: 260px;
+  overflow: auto;
+}
+.q-list button {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 6px;
+}
+.q-list button:hover { background: var(--surface-2); }
+.q-empty { padding: 8px 10px; color: var(--muted); font-size: .9375rem; }

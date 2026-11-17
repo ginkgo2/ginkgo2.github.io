@@ -14,7 +14,7 @@ const OUT_SVG = path.join(SITE, 'assets/img/haigang.svg');
 const OUT_LABELS = path.join(SITE, 'data/labels.js');
 
 const W = 1000, H = 620;
-const BBOX = { s: 39.87, w: 119.48, n: 39.99, e: 119.72 };
+const BBOX = { s: 39.878, w: 119.515, n: 39.958, e: 119.683 };
 
 const raw = JSON.parse(fs.readFileSync(RAW, 'utf8'));
 const poi = fs.existsSync(POI) ? JSON.parse(fs.readFileSync(POI, 'utf8')) : { elements: [] };
