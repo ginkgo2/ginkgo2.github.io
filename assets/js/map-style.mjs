@@ -94,7 +94,7 @@ export function addLayers(map, z0, data) {
     paint: bPaint
   });
   map.addLayer({
-    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 3.6,
+    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 4.3,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['<', ['get', 'a'], 400]],
     paint: bPaint
   });
