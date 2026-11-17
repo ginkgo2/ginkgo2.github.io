@@ -20,6 +20,13 @@ export function toXY(lng, lat) {
 
 export const BOUNDS = [[BBOX.w, BBOX.s], [BBOX.e, BBOX.n]];
 
+const LAT0 = (BBOX.s + BBOX.n) / 2;
+
+// 比例尺显示某个米数时对应的缩放级别（MapLibre 比例尺按 1 米/像素 ≈ 100 米）
+export function zoomForMetersPerPixel(mpp) {
+  return Math.log2(156543.03392 * Math.cos(LAT0 * Math.PI / 180) / mpp);
+}
+
 export function emptyStyle() {
   return {
     version: 8,
@@ -93,10 +100,12 @@ export function addLayers(map, z0, data) {
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 400], ['<', ['get', 'a'], 1500]],
     paint: bPaint
   });
+  // 小建筑：比例尺到 100 米（约 1 米/像素）才出现，颜色比大中建筑更浅
+  const zSmall = zoomForMetersPerPixel(1);
   map.addLayer({
-    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 4.3,
+    id: 'bld-small', type: 'fill', source: 'detail', minzoom: zSmall,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['<', ['get', 'a'], 400]],
-    paint: bPaint
+    paint: { 'fill-color': '#eeeae1', 'fill-outline-color': '#e4dfd5' }
   });
 
   map.addLayer({
