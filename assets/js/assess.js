@@ -61,8 +61,8 @@
         '</div>';
     }
 
-    if (d.id === 'crowd') {
-      extra = '<p class="hint" data-tool="crowd"></p>';
+    if (d.id === 'crowd' || d.id === 'quiet' || d.id === 'surprise') {
+      extra += '<p class="hint" data-tool="' + d.id + '"></p>';
     }
 
     return '<fieldset class="dim-block">' +
@@ -181,7 +181,7 @@
     if (e.target.type !== 'radio') return;
     renderResult();
   });
-  form.id.addEventListener('input', function () { renderToolsNote(); suggestCrowd(); });
+  form.id.addEventListener('input', function () { renderToolsNote(); suggestAll(); });
 
   /* ---------- 工具箱带入 ---------- */
 
@@ -228,43 +228,83 @@
     note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
   }
 
-  /* 人流是唯一能由工具直接定分的项：锚点就是人数区间；
+  /* 工具能直接定分的三项：人流、安静空间时长、突发声窗内次数。
      噪声的指示值没校准，只显示参考，不代选。 */
-  function suggestCrowd() {
-    var host = form.querySelector('[data-tool="crowd"]');
+  function toolSuggestion(dimId) {
+    var host = form.querySelector('[data-tool="' + dimId + '"]');
     if (!host) return;
 
     var imp = importable(form.id.value.trim());
-    if (!imp.t || imp.t.crowdCount == null) { host.textContent = ''; return; }
+    if (!imp.t) { host.textContent = ''; return; }
 
-    var n = imp.t.crowdCount;
-    var q = imp.t.queueMin;
-    var peak = imp.t.peakInRoom;
+    var t = imp.t;
+    var s = null;
+    var why = '';
 
-    var s = n < 10 ? 5 : n <= 25 ? 4 : n <= 45 ? 3 : n <= 60 ? 2 : 1;
-    var why = n + ' 人/5 分钟';
+    if (dimId === 'crowd') {
+      if (t.crowdCount == null) { host.textContent = ''; return; }
+      if (!t.crowdDone) {
+        host.textContent = '工具箱只测了 ' + (t.crowdSec || 0) + ' 秒，不足 5 分钟，不能直接套用。';
+        return;
+      }
+      s = t.crowdCount < 10 ? 5 : t.crowdCount <= 25 ? 4 : t.crowdCount <= 45 ? 3 : t.crowdCount <= 60 ? 2 : 1;
+      why = t.crowdCount + ' 人/5 分钟';
 
-    if (q != null && q > 10) {
-      s = 1;
-      why += '，排队 ' + q + ' 分钟';
-    } else if (q != null && q > 3 && s > 2) {
-      s = 2;
-      why += '，排队 ' + q + ' 分钟';
+      if (t.queueMin != null && t.queueMin > 10) {
+        s = 1;
+        why += '，排队 ' + t.queueMin + ' 分钟';
+      } else if (t.queueMin != null && t.queueMin > 3 && s > 2) {
+        s = 2;
+        why += '，排队 ' + t.queueMin + ' 分钟';
+      }
+      if (t.peakInRoom != null && t.peakInRoom >= 15 && s > 2) {
+        s = 2;
+        why += '，同时停留 ' + t.peakInRoom + ' 人';
+      }
     }
-    if (peak != null && peak >= 15 && s > 2) {
-      s = 2;
-      why += '，同时停留 ' + peak + ' 人';
+
+    if (dimId === 'quiet') {
+      if (t.quietMin == null) { host.textContent = ''; return; }
+      var m = t.quietMin;
+      s = m <= 3 ? 5 : m <= 5 ? 4 : m <= 10 ? 3 : 2;
+      why = '步行 ' + m + ' 分钟';
     }
 
-    var checked = form.querySelector('input[name="crowd"]:checked');
+    if (dimId === 'surprise') {
+      var wins = Array.isArray(t.windows) ? t.windows : [];
+      if (!wins.length) { host.textContent = ''; return; }
+
+      var counts = wins.map(function (w) { return (w.events || []).length; });
+      var n = Math.max.apply(null, counts);
+      var unexpected = wins.some(function (w) {
+        return (w.events || []).some(function (e) { return !e.expected; });
+      });
+
+      if (n <= 1) s = 5;
+      else if (n === 2) s = 4;
+      else if (n <= 5) s = 3;
+      else s = unexpected ? 1 : 2;
+
+      why = wins.length + ' 个观察窗，最多 ' + n + ' 次';
+      if (wins.some(function (w) { return !w.completed; })) why += '（有窗未满 10 分钟）';
+    }
+
+    if (s == null) { host.textContent = ''; return; }
+
+    var checked = form.querySelector('input[name="' + dimId + '"]:checked');
     var auto = false;
     if (!checked) {
-      var target = form.querySelector('input[name="crowd"][value="' + s + '"]');
+      var target = form.querySelector('input[name="' + dimId + '"][value="' + s + '"]');
       if (target) { target.checked = true; auto = true; renderResult(); }
     }
 
     host.textContent = '来自工具箱：' + why + ' → 建议 ' + s + ' 分' +
-      (auto ? '（已自动选）' : '（已手动选过，保留你的）');
+      (auto ? '（已自动选）' : '（已手动选过，保留你的）') +
+      (dimId === 'quiet' ? '；能不能坐、能不能关门、有没有标识还要看' : '');
+  }
+
+  function suggestAll() {
+    ['crowd', 'quiet', 'surprise'].forEach(toolSuggestion);
   }
 
   /* ---------- 草稿 ---------- */
@@ -396,5 +436,5 @@
 
   renderResult();
   renderToolsNote();
-  suggestCrowd();
+  suggestAll();
 })();
