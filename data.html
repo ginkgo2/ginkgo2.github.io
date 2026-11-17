@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>数据 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171846">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171847">
 </head>
 <body data-page="data">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171846">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171847">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611171846">清单</a>
-    <a href="./map.html?v=202611171846">地图</a>
-    <a href="./tools.html?v=202611171846">工具箱</a>
-    <a href="./assess.html?v=202611171846">评估</a>
-    <a href="./method.html?v=202611171846">方法</a>
-    <a href="./data.html?v=202611171846" aria-current="page">数据</a>
+    <a href="./list.html?v=202611171847">清单</a>
+    <a href="./map.html?v=202611171847">地图</a>
+    <a href="./tools.html?v=202611171847">工具箱</a>
+    <a href="./assess.html?v=202611171847">评估</a>
+    <a href="./method.html?v=202611171847">方法</a>
+    <a href="./data.html?v=202611171847" aria-current="page">数据</a>
   </nav>
   </div>
 </header>
@@ -52,7 +52,8 @@
         <tr><td><code>name</code></td><td>显示名</td><td>可脱敏，如"某社区卫生服务中心"</td></tr>
         <tr><td><code>envType</code></td><td>环境类型</td><td><code>path</code> 通行路径、<code>daily</code> 日常必需、<code>public</code> 公共空间、<code>venue</code> 大型场馆</td></tr>
         <tr><td><code>scenario</code></td><td>场景包</td><td><code>indoor</code> 城市室内、<code>outdoor</code> 城市室外、<code>nature</code> 自然户外</td></tr>
-        <tr><td><code>x</code> / <code>y</code></td><td>底图上的像素坐标</td><td>整数</td></tr>
+        <tr><td><code>x</code> / <code>y</code></td><td>底图上的像素坐标</td><td>整数，和当前底图范围绑定</td></tr>
+        <tr><td><code>lng</code> / <code>lat</code></td><td>经纬度</td><td>优先使用；改底图范围后仍有效。没有时才用 x/y 换算</td></tr>
         <tr><td><code>observedAt</code></td><td>观察时间</td><td>ISO 8601，带时区</td></tr>
         <tr><td><code>scores</code></td><td>六项分数</td><td>1—5，缺项不写</td></tr>
         <tr><td><code>level</code></td><td>等级</td><td><code>recommended</code>、<code>conditional</code>、<code>not_recommended</code>、<code>no_data</code></td></tr>
@@ -82,10 +83,10 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171846"></script>
-<script src="./data/demo-points.js?v=202611171846"></script>
-<script src="./data/build.js?v=202611171846"></script>
-<script src="./assets/js/core.js?v=202611171846"></script>
+<script src="./data/points.js?v=202611171847"></script>
+<script src="./data/demo-points.js?v=202611171847"></script>
+<script src="./data/build.js?v=202611171847"></script>
+<script src="./assets/js/core.js?v=202611171847"></script>
 <script>
 (function () {
   var pts = window.SF.points();

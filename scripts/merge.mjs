@@ -121,6 +121,8 @@ const places = readCsv(placesFile).map((r, i) => {
     envType: r.envType,
     x: r.x === '' ? null : Number(r.x),
     y: r.y === '' ? null : Number(r.y),
+    lng: r.lng ? Number(r.lng) : null,
+    lat: r.lat ? Number(r.lat) : null,
     status: r.status || 'candidate'
   };
 });
@@ -244,9 +246,11 @@ for (const place of places) {
     skipped.push([place.id, '缺条件']);
     continue;
   }
-  if (place.x == null || place.y == null) warn(`${place.id} 没有坐标，地图上不会出现`);
+  if (place.x == null && place.lng == null) warn(`${place.id} 没有坐标，地图上不会出现`);
 
-  const ll = place.x != null && place.y != null ? toLngLat(place.x, place.y) : null;
+  const ll = place.lng != null && place.lat != null
+    ? [place.lng, place.lat]
+    : place.x != null && place.y != null ? toLngLat(place.x, place.y) : null;
 
   publicPoints.push({
     id: place.id,

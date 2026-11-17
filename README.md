@@ -52,12 +52,13 @@ node scripts/build-geojson.mjs
 ## 采集到发布
 
 ```
-data/places.csv     点位清单
+data/places.csv     点位清单，坐标为像素 x/y，也可以直接写 lng/lat
 raw/*.json          评估页导出的 JSON
 node scripts/merge.mjs --places data/places.csv --raw raw --out data/points.js
 ```
 
 合并脚本会校验分值越界、字段缺失、两人定级冲突。有错就不写文件，原数据保持原样。
+输出的点位同时带 x/y 和 lng/lat。改底图范围后，用 lng/lat 渲染，旧点位不会错位。
 
 ## 许可
 
