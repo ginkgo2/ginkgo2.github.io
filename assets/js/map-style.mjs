@@ -39,9 +39,23 @@ function metersPerPixel(map) {
   return haversine(c, q) / 100;
 }
 
-// 比例尺显示 meters 米时对应的缩放级别（比例尺条按 100 像素算）
+// MapLibre 的比例尺按 1/2/3/5 阶梯取整，标签「500 米」会横跨一段缩放区间。
+// 这里返回标签「刚变成 meters 米」时的缩放级别（即该档位的上沿）。
+function nextNiceAbove(v) {
+  const bases = [1, 2, 3, 5, 10];
+  const exp = Math.floor(Math.log10(v));
+  for (let e = exp; e <= exp + 2; e++) {
+    for (const b of bases) {
+      const n = b * Math.pow(10, e);
+      if (n > v) return n;
+    }
+  }
+  return v * 10;
+}
+
 export function zoomForScale(map, meters) {
-  return map.getZoom() + Math.log2(metersPerPixel(map) / (meters / 100));
+  const edge = nextNiceAbove(meters);
+  return map.getZoom() + Math.log2(metersPerPixel(map) / (edge / 100));
 }
 
 export function emptyStyle() {
