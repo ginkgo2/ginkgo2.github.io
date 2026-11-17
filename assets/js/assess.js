@@ -116,16 +116,38 @@
 
   var pos = null;
   var pickerApi = null;
+  var pickX = document.getElementById('pick-x');
+  var pickY = document.getElementById('pick-y');
+
+  function syncPickInputs() {
+    if (pickX) pickX.value = pos ? pos.x : '';
+    if (pickY) pickY.value = pos ? pos.y : '';
+  }
 
   function updatePosText() {
     var el = document.getElementById('pick-val');
     if (el) el.textContent = pos ? '坐标：' + pos.x + ', ' + pos.y : '坐标：未选';
+    syncPickInputs();
   }
 
   function setPos(x, y) {
     pos = { x: x, y: y };
     updatePosText();
   }
+
+  // 手动填坐标（地图加载失败时也能用）
+  [pickX, pickY].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('change', function () {
+      if (!pickX.value || !pickY.value) return;
+      var x = Number(pickX.value);
+      var y = Number(pickY.value);
+      if (!isFinite(x) || !isFinite(y)) return;
+      pos = { x: Math.round(x), y: Math.round(y) };
+      updatePosText();
+      if (pickerApi) pickerApi.setValue(pos.x, pos.y);
+    });
+  });
 
   var pickWrap = document.getElementById('pick-wrap');
   var pickOpen = document.getElementById('pick-open');
@@ -145,6 +167,7 @@
 
   document.getElementById('pick-clear').addEventListener('click', function () {
     pos = null;
+    autoSet = {};
     if (pickerApi) pickerApi.clear();
     updatePosText();
   });
@@ -181,7 +204,7 @@
     if (e.target.type !== 'radio') return;
     renderResult();
   });
-  form.id.addEventListener('input', function () { renderToolsNote(); suggestAll(); });
+  form.id.addEventListener('input', function () { clearAutoScores(); renderToolsNote(); suggestAll(); });
 
   /* ---------- 工具箱带入 ---------- */
 
@@ -235,15 +258,16 @@
     if (!host) return;
 
     var imp = importable(form.id.value.trim());
-    if (!imp.t) { host.textContent = ''; return; }
+    if (!imp.t) { host.textContent = ''; clearOne(dimId); return; }
 
     var t = imp.t;
     var s = null;
     var why = '';
 
     if (dimId === 'crowd') {
-      if (t.crowdCount == null) { host.textContent = ''; return; }
+      if (t.crowdCount == null) { host.textContent = ''; clearOne(dimId); return; }
       if (!t.crowdDone) {
+        clearOne(dimId);
         host.textContent = '工具箱只测了 ' + (t.crowdSec || 0) + ' 秒，不足 5 分钟，不能直接套用。';
         return;
       }
@@ -264,7 +288,7 @@
     }
 
     if (dimId === 'quiet') {
-      if (t.quietMin == null) { host.textContent = ''; return; }
+      if (t.quietMin == null) { host.textContent = ''; clearOne(dimId); return; }
       var m = t.quietMin;
       s = m <= 3 ? 5 : m <= 5 ? 4 : m <= 10 ? 3 : 2;
       why = '步行 ' + m + ' 分钟';
@@ -272,11 +296,19 @@
 
     if (dimId === 'surprise') {
       var wins = Array.isArray(t.windows) ? t.windows : [];
-      if (!wins.length) { host.textContent = ''; return; }
+      if (!wins.length) { host.textContent = ''; clearOne(dimId); return; }
 
-      var counts = wins.map(function (w) { return (w.events || []).length; });
+      // 锚点是“每 10 分钟”，只有满 10 分钟的窗才能套用
+      var done = wins.filter(function (w) { return w.completed; });
+      if (!done.length) {
+        clearOne(dimId);
+        host.textContent = '工具箱里的 ' + wins.length + ' 个观察窗都没满 10 分钟，不自动给分。';
+        return;
+      }
+
+      var counts = done.map(function (w) { return (w.events || []).length; });
       var n = Math.max.apply(null, counts);
-      var unexpected = wins.some(function (w) {
+      var unexpected = done.some(function (w) {
         return (w.events || []).some(function (e) { return !e.expected; });
       });
 
@@ -285,8 +317,8 @@
       else if (n <= 5) s = 3;
       else s = unexpected ? 1 : 2;
 
-      why = wins.length + ' 个观察窗，最多 ' + n + ' 次';
-      if (wins.some(function (w) { return !w.completed; })) why += '（有窗未满 10 分钟）';
+      why = done.length + ' 个满 10 分钟的窗，最多 ' + n + ' 次';
+      if (done.length < wins.length) why += '（另有 ' + (wins.length - done.length) + ' 个未满，未计入）';
     }
 
     if (s == null) { host.textContent = ''; return; }
@@ -295,13 +327,45 @@
     var auto = false;
     if (!checked) {
       var target = form.querySelector('input[name="' + dimId + '"][value="' + s + '"]');
-      if (target) { target.checked = true; auto = true; renderResult(); }
+      if (target) {
+        target.checked = true;
+        autoSet[dimId] = true;
+        auto = true;
+        renderResult();
+      }
     }
 
     host.textContent = '来自工具箱：' + why + ' → 建议 ' + s + ' 分' +
       (auto ? '（已自动选）' : '（已手动选过，保留你的）') +
       (dimId === 'quiet' ? '；能不能坐、能不能关门、有没有标识还要看' : '');
   }
+
+  // 自动选的分数：换编号或用户手动改了就作废
+  var autoSet = {};
+
+  function clearOne(dimId) {
+    if (!autoSet[dimId]) return;
+    var checked = form.querySelector('input[name="' + dimId + '"]:checked');
+    if (checked) checked.checked = false;
+    autoSet[dimId] = false;
+    renderResult();
+  }
+
+  function clearAutoScores() {
+    var changed = false;
+    Object.keys(autoSet).forEach(function (dim) {
+      if (!autoSet[dim]) return;
+      var checked = form.querySelector('input[name="' + dim + '"]:checked');
+      if (checked) { checked.checked = false; changed = true; }
+      autoSet[dim] = false;
+    });
+    if (changed) renderResult();
+  }
+
+  form.addEventListener('change', function (e) {
+    var n = e.target && e.target.name;
+    if (n && autoSet[n]) autoSet[n] = false;
+  });
 
   function suggestAll() {
     ['crowd', 'quiet', 'surprise'].forEach(toolSuggestion);
@@ -384,6 +448,7 @@
     form.reset();
     form.observedAt.value = SF.nowLocal();
     pos = null;
+    autoSet = {};
     if (pickerApi) pickerApi.clear();
     updatePosText();
     try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* 忽略 */ }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>评估 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171746">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171808">
 </head>
 <body data-page="assess">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171746">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171808">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611171746">清单</a>
-    <a href="./map.html?v=202611171746">地图</a>
-    <a href="./tools.html?v=202611171746">工具箱</a>
-    <a href="./assess.html?v=202611171746" aria-current="page">评估</a>
-    <a href="./method.html?v=202611171746">方法</a>
-    <a href="./data.html?v=202611171746">数据</a>
+    <a href="./list.html?v=202611171808">清单</a>
+    <a href="./map.html?v=202611171808">地图</a>
+    <a href="./tools.html?v=202611171808">工具箱</a>
+    <a href="./assess.html?v=202611171808" aria-current="page">评估</a>
+    <a href="./method.html?v=202611171808">方法</a>
+    <a href="./data.html?v=202611171808">数据</a>
   </nav>
   </div>
 </header>
@@ -69,6 +69,17 @@
       <div id="pick-wrap" hidden style="margin-top:14px">
         <div id="picker" class="picker"></div>
         <p class="hint" id="pick-val">坐标：未选</p>
+        <div class="grid-2" style="margin-top:12px">
+          <label class="field">
+            <span>x</span>
+            <input id="pick-x" type="number" inputmode="numeric" placeholder="412" autocomplete="off">
+          </label>
+          <label class="field">
+            <span>y</span>
+            <input id="pick-y" type="number" inputmode="numeric" placeholder="236" autocomplete="off">
+          </label>
+        </div>
+        <p class="hint">地图加载不出来时，直接填 x / y 也可以。</p>
         <p class="hint">底图 © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>，ODbL 1.0。</p>
         <div class="actions" style="margin-top:10px">
           <button type="button" class="btn btn-ghost" id="pick-clear">清除位置</button>
@@ -117,16 +128,16 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171746"></script>
-<script src="./data/places.js?v=202611171746"></script>
-<script src="./data/landmarks.js?v=202611171746"></script>
-<script src="./data/labels.js?v=202611171746"></script>
-<script src="./data/labels-detail.js?v=202611171746"></script>
-<script src="./data/build.js?v=202611171746"></script>
-<script src="./assets/js/core.js?v=202611171746"></script>
-<script src="./assets/js/maplabels.js?v=202611171746"></script>
-<script src="./assets/js/picker.js?v=202611171746"></script>
-<script src="./assets/js/assess.js?v=202611171746"></script>
+<script src="./data/points.js?v=202611171808"></script>
+<script src="./data/places.js?v=202611171808"></script>
+<script src="./data/landmarks.js?v=202611171808"></script>
+<script src="./data/labels.js?v=202611171808"></script>
+<script src="./data/labels-detail.js?v=202611171808"></script>
+<script src="./data/build.js?v=202611171808"></script>
+<script src="./assets/js/core.js?v=202611171808"></script>
+<script src="./assets/js/maplabels.js?v=202611171808"></script>
+<script src="./assets/js/picker.js?v=202611171808"></script>
+<script src="./assets/js/assess.js?v=202611171808"></script>
 
 </body>
 </html>

@@ -268,18 +268,6 @@ publicPoints.sort((a, b) => a.id.localeCompare(b.id));
 
 const js = '/* 由 scripts/merge.mjs 生成，不要手改。 */\n' +
   'window.SF_POINTS = ' + JSON.stringify(publicPoints, null, 2) + ';\n';
-fs.mkdirSync(path.dirname(outFile), { recursive: true });
-fs.writeFileSync(outFile, js, 'utf8');
-
-if (internalFile) {
-  fs.writeFileSync(internalFile, JSON.stringify({
-    generatedAt: new Date().toISOString(),
-    places,
-    observations,
-    consistency,
-    publicIds: publicPoints.map(p => p.id)
-  }, null, 2), 'utf8');
-}
 
 /* ---------- 报告 ---------- */
 
@@ -302,9 +290,33 @@ if (warnings.length) {
   console.log('\n提醒：');
   warnings.forEach(w => console.log('  · ' + w));
 }
+
+// 有错就一条都不写，保证原文件不被半成品覆盖
 if (errors.length) {
   console.log('\n错误：');
   errors.forEach(e => console.log('  ✗ ' + e));
+  console.error('\n未写入 ' + path.relative(process.cwd(), outFile) + '（文件保持原样）');
   process.exit(1);
 }
+
+// 先写临时文件再改名，避免写到一半中断留下残缺文件
+function writeAtomic(file, content) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const tmp = file + '.tmp';
+  fs.writeFileSync(tmp, content, 'utf8');
+  fs.renameSync(tmp, file);
+}
+
+writeAtomic(outFile, js);
+
+if (internalFile) {
+  writeAtomic(internalFile, JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    places,
+    observations,
+    consistency,
+    publicIds: publicPoints.map(p => p.id)
+  }, null, 2));
+}
+
 console.log('\n已写入 ' + path.relative(process.cwd(), outFile));

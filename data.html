@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>数据 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171746">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171808">
 </head>
 <body data-page="data">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171746">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171808">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-    <a href="./list.html?v=202611171746">清单</a>
-    <a href="./map.html?v=202611171746">地图</a>
-    <a href="./tools.html?v=202611171746">工具箱</a>
-    <a href="./assess.html?v=202611171746">评估</a>
-    <a href="./method.html?v=202611171746">方法</a>
-    <a href="./data.html?v=202611171746" aria-current="page">数据</a>
+    <a href="./list.html?v=202611171808">清单</a>
+    <a href="./map.html?v=202611171808">地图</a>
+    <a href="./tools.html?v=202611171808">工具箱</a>
+    <a href="./assess.html?v=202611171808">评估</a>
+    <a href="./method.html?v=202611171808">方法</a>
+    <a href="./data.html?v=202611171808" aria-current="page">数据</a>
   </nav>
   </div>
 </header>
@@ -54,6 +54,16 @@
     </table>
   </div>
 
+  <h2>下载</h2>
+  <div class="prose">
+    <p id="dl-empty">还没有公开点位，暂时没有可下载的数据。</p>
+    <div class="actions" id="dl-actions" hidden>
+      <button type="button" class="btn" id="dl-json">下载 JSON</button>
+      <button type="button" class="btn btn-ghost" id="dl-csv">下载 CSV</button>
+    </div>
+    <p class="hint" id="dl-count"></p>
+  </div>
+
   <h2>许可</h2>
   <div class="prose">
     <p>点位数据按 <strong>CC BY 4.0</strong> 发布，代码按 <strong>MIT</strong> 发布。</p>
@@ -74,9 +84,52 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171746"></script>
-<script src="./data/build.js?v=202611171746"></script>
-<script src="./assets/js/core.js?v=202611171746"></script>
+<script src="./data/points.js?v=202611171808"></script>
+<script src="./data/build.js?v=202611171808"></script>
+<script src="./assets/js/core.js?v=202611171808"></script>
+<script>
+(function () {
+  var pts = window.SF.points();
+  if (!pts.length) return;
+
+  document.getElementById('dl-empty').hidden = true;
+  document.getElementById('dl-actions').hidden = false;
+  document.getElementById('dl-count').textContent = '共 ' + pts.length + ' 个点位，含六项分数、坐标与等级。';
+
+  function save(name, text, type) {
+    var blob = new Blob([text], { type: type });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  var today = new Date().toISOString().slice(0, 10);
+
+  document.getElementById('dl-json').addEventListener('click', function () {
+    save('感官友好点位-' + today + '.json', JSON.stringify(pts, null, 2), 'application/json');
+  });
+
+  document.getElementById('dl-csv').addEventListener('click', function () {
+    var dims = window.SF.DIMS.map(function (d) { return d.id; });
+    var head = ['id', 'name', 'envType', 'x', 'y', 'observedAt', 'level'].concat(dims).concat(['note']);
+    var rows = [head.join(',')];
+    pts.forEach(function (p) {
+      var line = [p.id, p.name, p.envType, p.x, p.y, p.observedAt, p.level];
+      dims.forEach(function (d) { line.push(p.scores && p.scores[d] != null ? p.scores[d] : ''); });
+      line.push(p.note || '');
+      rows.push(line.map(function (v) {
+        var s = v == null ? '' : String(v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(','));
+    });
+    save('感官友好点位-' + today + '.csv', '\uFEFF' + rows.join('\n'), 'text/csv');
+  });
+})();
+</script>
 
 </body>
 </html>

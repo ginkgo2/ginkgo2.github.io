@@ -3,6 +3,9 @@
 (function () {
   'use strict';
 
+  // classic script 里 import() 的相对路径以脚本自身为基准，所以用脚本地址拼绝对路径
+  var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || location.href;
+
   window.SFPicker = function (host, opts) {
     opts = opts || {};
     var onPick = opts.onPick || function () {};
@@ -29,8 +32,11 @@
     }
 
     (async function () {
-      var ml = await import('./assets/vendor/maplibre/maplibre-gl.mjs');
-      st = await import('./assets/js/map-style.mjs?v=202611171746');
+      var v = window.SF_VERSION ? '?v=' + encodeURIComponent(window.SF_VERSION) : '';
+      var mlUrl = new URL('../vendor/maplibre/maplibre-gl.mjs', SCRIPT_SRC).href + v;
+      var stUrl = new URL('map-style.mjs', SCRIPT_SRC).href + v;
+      var ml = await import(mlUrl);
+      st = await import(stUrl);
 
       host.innerHTML = '';
       map = new ml.Map({
@@ -59,7 +65,7 @@
         });
       });
     })().catch(function () {
-      host.innerHTML = '<p class="hint" style="padding:14px;margin:0">地图加载失败，可以直接填坐标。</p>';
+      host.innerHTML = '<p class="hint" style="padding:14px;margin:0">地图加载失败，可以在下面直接填坐标。</p>';
     });
 
     return {
