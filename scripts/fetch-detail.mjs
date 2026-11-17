@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { BBOX } from './map-config.mjs';
 
 const UA = 'sensory-friendly-map/0.1 (student project; contact: 3548261366@qq.com)';
 const headers = {
@@ -10,7 +11,7 @@ const headers = {
   'User-Agent': UA
 };
 
-const B = '39.878,119.515,39.958,119.683';
+const B = [BBOX.s, BBOX.w, BBOX.n, BBOX.e].join(',');
 const q = `[out:json][timeout:240];
 (
   way["highway"~"^(service|footway|pedestrian|path|track|living_street|steps|cycleway)$"](${B});
