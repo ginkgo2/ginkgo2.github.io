@@ -214,10 +214,21 @@
     host.textContent = parts.join(' · ');
   }
 
+  /* ---------- 点位表的自动补全 ---------- */
+
+  function fillPlaceList() {
+    var list = document.getElementById('place-list');
+    if (!list || !Array.isArray(window.SF_PLACES)) return;
+    list.innerHTML = window.SF_PLACES.map(function (p) {
+      return '<option value="' + esc(p.id) + '">' + esc(p.name || '') + '</option>';
+    }).join('');
+  }
+
   /* ---------- 启动 ---------- */
 
   function boot() {
     initBuild();
+    fillPlaceList();
   }
 
   if (document.readyState === 'loading') {

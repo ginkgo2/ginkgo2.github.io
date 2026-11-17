@@ -383,6 +383,17 @@
   /* ---------- 启动 ---------- */
 
   apply(SF.store(DRAFT_KEY));
+
+  // 编号没填时，从工具箱的当前会话带过来
+  if (!form.id.value.trim()) {
+    var t = SF.store('sf:tools');
+    if (t && t.pointId) {
+      form.id.value = t.pointId;
+      var note = document.getElementById('tools-note');
+      if (note) note.textContent = '编号来自工具箱的当前会话，可改。';
+    }
+  }
+
   renderResult();
   renderToolsNote();
   suggestCrowd();
