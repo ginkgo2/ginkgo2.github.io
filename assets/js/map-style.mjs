@@ -89,25 +89,32 @@ export function addLayers(map, z0, data) {
     paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.4, 1.0, z0 + 5, 2.4] }
   });
 
-  const bPaint = { 'fill-color': '#e2ddcf', 'fill-outline-color': '#d2cbbb' };
+  // 建筑：按比例尺分档出现，颜色随比例尺由浅变深（300 米时最浅，100 米时恢复正常）
+  const zBldBig = zoomForMetersPerPixel(3);    // 比例尺约 300 米
+  const zBldMid = zoomForMetersPerPixel(1.6);  // 约 160 米
+  const zBldSmall = zoomForMetersPerPixel(1);  // 约 100 米
+  const zDark = zBldSmall;
+
+  const bPaint = {
+    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f1ede6', zDark, '#e2ddcf'],
+    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#e9e4dc', zDark, '#d2cbbb']
+  };
+
   map.addLayer({
-    id: 'bld-big', type: 'fill', source: 'detail', minzoom: z0 + 1.6,
+    id: 'bld-big', type: 'fill', source: 'detail', minzoom: zBldBig,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 1500]],
     paint: bPaint
   });
   map.addLayer({
-    id: 'bld-mid', type: 'fill', source: 'detail', minzoom: z0 + 2.6,
+    id: 'bld-mid', type: 'fill', source: 'detail', minzoom: zBldMid,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 400], ['<', ['get', 'a'], 1500]],
     paint: bPaint
   });
-  // 小建筑：比例尺到 100 米（约 1 米/像素）才出现，颜色比大中建筑更浅
-  const zSmall = zoomForMetersPerPixel(1);
   map.addLayer({
-    id: 'bld-small', type: 'fill', source: 'detail', minzoom: zSmall,
+    id: 'bld-small', type: 'fill', source: 'detail', minzoom: zBldSmall,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['<', ['get', 'a'], 400]],
-    paint: { 'fill-color': '#eeeae1', 'fill-outline-color': '#e4dfd5' }
+    paint: bPaint
   });
-
   map.addLayer({
     id: 'gate', type: 'circle', source: 'detail', minzoom: z0 + 2.8,
     filter: ['==', ['get', 'kind'], 'gate'],
