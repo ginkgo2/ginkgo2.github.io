@@ -729,3 +729,21 @@ body[data-page="map"] .ml-shell { height: 74vh; }
 }
 .picker .map-tools { top: 8px; right: 8px; left: auto; }
 .ml-lbl.t4 { font-size: 11px; color: #6f6e68; }
+/* ---------- 示例数据横幅 ---------- */
+
+.demo-banner {
+  background: #fbf3d9;
+  color: #6b5a1e;
+  border-bottom: 1px solid #e8d9a8;
+  padding: 10px 24px;
+  font-size: .9375rem;
+  line-height: 1.6;
+}
+.demo-banner code {
+  background: rgba(0, 0, 0, .06);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  .demo-banner { background: #3a3320; color: #e8d9a8; border-bottom-color: #55492a; }
+}
