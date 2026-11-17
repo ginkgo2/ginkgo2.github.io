@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图（试验页）· 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171646">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171646">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171650">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171650">
 <style>
   #ml-map { height: 70vh; min-height: 380px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; position: relative; }
   .lbl-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
@@ -21,14 +21,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171646">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171650">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611171646">清单</a>
-      <a href="./map.html?v=202611171646" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611171646">工具箱</a>
-      <a href="./assess.html?v=202611171646">评估</a>
-      <a href="./method.html?v=202611171646">方法</a>
-      <a href="./data.html?v=202611171646">数据</a>
+      <a href="./list.html?v=202611171650">清单</a>
+      <a href="./map.html?v=202611171650" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611171650">工具箱</a>
+      <a href="./assess.html?v=202611171650">评估</a>
+      <a href="./method.html?v=202611171650">方法</a>
+      <a href="./data.html?v=202611171650">数据</a>
     </nav>
   </div>
 </header>
@@ -36,7 +36,7 @@
 <main id="main" class="wrap">
   <header class="page-head">
     <h1>地图（试验页）</h1>
-    <p class="hint">用 MapLibre 渲染同一份 OSM 数据。只读，不含搜索、标点和导出；正式版仍是 <a href="./map.html?v=202611171646">map.html</a>。</p>
+    <p class="hint">用 MapLibre 渲染同一份 OSM 数据。只读，不含搜索、标点和导出；正式版仍是 <a href="./map.html?v=202611171650">map.html</a>。</p>
   </header>
 
   <div id="ml-map"></div>
@@ -54,11 +54,11 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171646"></script>
-<script src="./data/labels.js?v=202611171646"></script>
-<script src="./data/labels-detail.js?v=202611171646"></script>
-<script src="./data/build.js?v=202611171646"></script>
-<script src="./assets/js/core.js?v=202611171646"></script>
+<script src="./data/points.js?v=202611171650"></script>
+<script src="./data/labels.js?v=202611171650"></script>
+<script src="./data/labels-detail.js?v=202611171650"></script>
+<script src="./data/build.js?v=202611171650"></script>
+<script src="./assets/js/core.js?v=202611171650"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
@@ -137,23 +137,33 @@ map.on('load', async () => {
   }
 
   map.addLayer({
-    id: 'building', type: 'fill', source: 'detail', minzoom: 14.2,
+    id: 'building', type: 'fill', source: 'detail', minzoom: 15.0,
     filter: ['==', ['get', 'kind'], 'building'],
-    paint: { 'fill-color': '#eae5db', 'fill-outline-color': '#e0dbd1' }
+    paint: { 'fill-color': '#e2ddcf', 'fill-outline-color': '#d2cbbb' }
   });
 
   map.addLayer({
-    id: 'minor', type: 'line', source: 'detail', minzoom: 14.2,
+    id: 'minor-casing', type: 'line', source: 'detail', minzoom: 14.6,
     filter: ['==', ['get', 'kind'], 'minor'],
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#ffffff',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 14.2, 0.9, 18, 2.4]
+      'line-color': '#d8d2c4',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 14.6, 1.6, 18, 3.4]
     }
   });
 
   map.addLayer({
-    id: 'gate', type: 'circle', source: 'detail', minzoom: 15,
+    id: 'minor', type: 'line', source: 'detail', minzoom: 14.6,
+    filter: ['==', ['get', 'kind'], 'minor'],
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': '#ffffff',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 14.6, 1.0, 18, 2.4]
+    }
+  });
+
+  map.addLayer({
+    id: 'gate', type: 'circle', source: 'detail', minzoom: 15.5,
     filter: ['==', ['get', 'kind'], 'gate'],
     paint: { 'circle-color': '#a03b2f', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 18, 6], 'circle-stroke-color': '#fff', 'circle-stroke-width': 1 }
   });
