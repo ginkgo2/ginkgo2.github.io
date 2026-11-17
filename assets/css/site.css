@@ -81,6 +81,7 @@ a:hover { text-decoration-thickness: 2px; }
 .skip:focus { left: 12px; top: 12px; }
 
 .wrap {
+  width: 100%;
   max-width: var(--wrap);
   margin: 0 auto;
   padding: 0 24px;
