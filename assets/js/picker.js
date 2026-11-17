@@ -24,6 +24,7 @@
     svg.setAttribute('aria-label', '在地图上选择位置，点击放置标记');
     svg.innerHTML =
       '<image href="./assets/img/haigang.svg" x="0" y="0" width="1000" height="620"></image>' +
+      '<image class="pk-detail" x="0" y="0" width="1000" height="620" style="display:none"></image>' +
       '<g class="pk-labels"></g>' +
       '<g class="pk-marks"></g>' +
       '<circle class="pk-dot" cx="-99" cy="-99" r="0" fill="none" stroke="#9c3b30"></circle>';
@@ -47,7 +48,21 @@
       cx = x + vw / 2;
       cy = y + vh / 2;
       svg.setAttribute('viewBox', [x, y, vw, vh].join(' '));
-      if (window.SFML) SFML.render(svg.querySelector('.pk-labels'), s, window.SF_LABELS || [], vw, vh, x, y);
+
+      var d = svg.querySelector('.pk-detail');
+      if (d) {
+        if (s >= 2) {
+          if (!d.getAttribute('href')) d.setAttribute('href', './assets/img/haigang-detail.svg');
+          d.style.display = '';
+        } else {
+          d.style.display = 'none';
+        }
+      }
+
+      if (window.SFML) {
+        var all = (window.SF_LABELS || []).concat(window.SF_LABELS_DETAIL || []);
+        SFML.render(svg.querySelector('.pk-labels'), s, all, vw, vh, x, y);
+      }
       drawMarks();
       if (value) place(value.x, value.y);
     }

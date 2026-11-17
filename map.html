@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171123">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171147">
 </head>
 <body data-page="map">
 
@@ -12,14 +12,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171123">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171147">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611171123">清单</a>
-      <a href="./map.html?v=202611171123" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611171123">工具箱</a>
-      <a href="./assess.html?v=202611171123">评估</a>
-      <a href="./method.html?v=202611171123">方法</a>
-      <a href="./data.html?v=202611171123">数据</a>
+      <a href="./list.html?v=202611171147">清单</a>
+      <a href="./map.html?v=202611171147" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611171147">工具箱</a>
+      <a href="./assess.html?v=202611171147">评估</a>
+      <a href="./method.html?v=202611171147">方法</a>
+      <a href="./data.html?v=202611171147">数据</a>
     </nav>
   </div>
 </header>
@@ -38,6 +38,7 @@
   <div class="map-shell">
     <svg id="map" viewBox="0 0 1000 620" role="application" aria-label="海港区点位地图，可拖动和缩放">
       <image href="./assets/img/haigang.svg" x="0" y="0" width="1000" height="620"></image>
+      <image id="detail" x="0" y="0" width="1000" height="620" style="display:none"></image>
       <g id="labels"></g>
       <g id="pins"></g>
       <circle id="pick-dot" cx="-99" cy="-99" r="0" fill="none" stroke="#9c3b30" stroke-width="0"></circle>
@@ -83,12 +84,13 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171123"></script>
-<script src="./data/landmarks.js?v=202611171123"></script>
-<script src="./data/labels.js?v=202611171123"></script>
-<script src="./data/build.js?v=202611171123"></script>
-<script src="./assets/js/core.js?v=202611171123"></script>
-<script src="./assets/js/maplabels.js?v=202611171123"></script>
+<script src="./data/points.js?v=202611171147"></script>
+<script src="./data/landmarks.js?v=202611171147"></script>
+<script src="./data/labels.js?v=202611171147"></script>
+<script src="./data/labels-detail.js?v=202611171147"></script>
+<script src="./data/build.js?v=202611171147"></script>
+<script src="./assets/js/core.js?v=202611171147"></script>
+<script src="./assets/js/maplabels.js?v=202611171147"></script>
 <script>
 (function () {
   var SF = window.SF;
@@ -123,15 +125,29 @@
     view.cx = x + vw / 2;
     view.cy = y + vh / 2;
     svg.setAttribute('viewBox', [x, y, vw, vh].join(' '));
+    toggleDetail();
     renderLabels(x, y, vw, vh);
     drawPins();
     updateLegend();
   }
 
+  // 放大到 2 倍才加载细节层（小路、建筑、门）
+  function toggleDetail() {
+    var d = document.getElementById('detail');
+    if (!d) return;
+    if (view.s >= 2) {
+      if (!d.getAttribute('href')) d.setAttribute('href', './assets/img/haigang-detail.svg');
+      d.style.display = '';
+    } else {
+      d.style.display = 'none';
+    }
+  }
+
   function renderLabels(x, y, vw, vh) {
     if (!window.SFML) return;
     var layer = document.getElementById('labels');
-    SFML.render(layer, view.s, window.SF_LABELS || [], vw, vh, x, y);
+    var all = (window.SF_LABELS || []).concat(window.SF_LABELS_DETAIL || []);
+    SFML.render(layer, view.s, all, vw, vh, x, y);
   }
 
   function updateLegend() {
