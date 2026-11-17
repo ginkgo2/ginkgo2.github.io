@@ -49,7 +49,22 @@ for (const el of DET.elements) {
   }
   if (el.type !== 'way' || !el.geometry) continue;
   if (t.building) {
-    detail.push({ type: 'Feature', properties: { kind: 'building' }, geometry: { type: 'Polygon', coordinates: [ring(el.geometry)] } });
+    const pts = el.geometry.map(g => [g.lon, g.lat]);
+    // 粗略面积（平方米），用于按大小分档显示
+    let area = 0;
+    const lat0 = pts[0][1];
+    const kx = Math.cos(lat0 * Math.PI / 180) * 111320;
+    const ky = 110540;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      area += (pts[j][0] * kx) * (pts[i][1] * ky) - (pts[i][0] * kx) * (pts[j][1] * ky);
+    }
+    area = Math.abs(area / 2);
+
+    detail.push({
+      type: 'Feature',
+      properties: { kind: 'building', a: Math.round(area) },
+      geometry: { type: 'Polygon', coordinates: [ring(el.geometry)] }
+    });
   } else if (t.highway) {
     detail.push({ type: 'Feature', properties: { kind: 'minor', cls: t.highway }, geometry: { type: 'LineString', coordinates: line(el.geometry) } });
   }
