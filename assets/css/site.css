@@ -822,3 +822,14 @@ p { margin: 0 0 var(--sp-3); }
 .card > h2 { margin-top: var(--sp-5); }
 
 .page-head { margin-bottom: var(--sp-4); }
+/* 地图页留出页边距 */
+body[data-page="map"] .wrap {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+@media (max-width: 760px) {
+  body[data-page="map"] .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
