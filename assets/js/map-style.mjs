@@ -70,41 +70,41 @@ export function addLayers(map, z0, data) {
   }
 
   map.addLayer({
-    id: 'minor-casing', type: 'line', source: 'detail', minzoom: z0 + 1.2,
+    id: 'minor-casing', type: 'line', source: 'detail', minzoom: z0 + 1.4,
     filter: ['==', ['get', 'kind'], 'minor'],
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#d8d2c4', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.2, 1.6, z0 + 5, 3.4] }
+    paint: { 'line-color': '#d8d2c4', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.4, 1.6, z0 + 5, 3.4] }
   });
   map.addLayer({
-    id: 'minor', type: 'line', source: 'detail', minzoom: z0 + 1.2,
+    id: 'minor', type: 'line', source: 'detail', minzoom: z0 + 1.4,
     filter: ['==', ['get', 'kind'], 'minor'],
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.2, 1.0, z0 + 5, 2.4] }
+    paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.4, 1.0, z0 + 5, 2.4] }
   });
 
   const bPaint = { 'fill-color': '#e2ddcf', 'fill-outline-color': '#d2cbbb' };
   map.addLayer({
-    id: 'bld-big', type: 'fill', source: 'detail', minzoom: z0 + 0.9,
+    id: 'bld-big', type: 'fill', source: 'detail', minzoom: z0 + 1.2,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 1500]],
     paint: bPaint
   });
   map.addLayer({
-    id: 'bld-mid', type: 'fill', source: 'detail', minzoom: z0 + 1.6,
+    id: 'bld-mid', type: 'fill', source: 'detail', minzoom: z0 + 2.2,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['>=', ['get', 'a'], 400], ['<', ['get', 'a'], 1500]],
     paint: bPaint
   });
   map.addLayer({
-    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 2.2,
+    id: 'bld-small', type: 'fill', source: 'detail', minzoom: z0 + 3.2,
     filter: ['all', ['==', ['get', 'kind'], 'building'], ['<', ['get', 'a'], 400]],
     paint: bPaint
   });
 
   map.addLayer({
-    id: 'gate', type: 'circle', source: 'detail', minzoom: z0 + 2.0,
+    id: 'gate', type: 'circle', source: 'detail', minzoom: z0 + 2.6,
     filter: ['==', ['get', 'kind'], 'gate'],
     paint: {
       'circle-color': '#a03b2f',
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], z0 + 2, 3, z0 + 5, 6],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], z0 + 2.6, 3, z0 + 5, 6],
       'circle-stroke-color': '#fff',
       'circle-stroke-width': 1
     }

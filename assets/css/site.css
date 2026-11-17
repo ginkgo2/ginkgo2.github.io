@@ -728,3 +728,4 @@ body[data-page="map"] .ml-shell { height: 74vh; }
   box-sizing: border-box;
 }
 .picker .map-tools { top: 8px; right: 8px; left: auto; }
+.ml-lbl.t4 { font-size: 11px; color: #6f6e68; }

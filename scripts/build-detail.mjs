@@ -49,7 +49,7 @@ for (const el of data.elements) {
     if (t.barrier === 'gate' || t.amenity === 'parking_entrance') {
       const p = proj(el.lat, el.lon);
       gates.push(p);
-      if (t.name) labels.push({ n: t.name, x: p[0], y: p[1], t: 3, k: 'gate', r: 11 });
+      if (t.name) labels.push({ n: t.name, x: p[0], y: p[1], t: 4, k: 'gate', r: 11 });
     }
     continue;
   }
@@ -61,7 +61,7 @@ for (const el of data.elements) {
     if (d) buildings.push(d);
     if (t.name) {
       const c = center(el.geometry);
-      labels.push({ n: t.name, x: c[0], y: c[1], t: 3, k: 'building', r: 13 });
+      labels.push({ n: t.name, x: c[0], y: c[1], t: 4, k: 'building', r: 13 });
     }
     continue;
   }

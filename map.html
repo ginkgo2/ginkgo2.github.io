@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171707">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611171707">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611171710">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611171710">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611171707">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611171710">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611171707">清单</a>
-      <a href="./map.html?v=202611171707" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611171707">工具箱</a>
-      <a href="./assess.html?v=202611171707">评估</a>
-      <a href="./method.html?v=202611171707">方法</a>
-      <a href="./data.html?v=202611171707">数据</a>
+      <a href="./list.html?v=202611171710">清单</a>
+      <a href="./map.html?v=202611171710" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611171710">工具箱</a>
+      <a href="./assess.html?v=202611171710">评估</a>
+      <a href="./method.html?v=202611171710">方法</a>
+      <a href="./data.html?v=202611171710">数据</a>
     </nav>
   </div>
 </header>
@@ -75,12 +75,12 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611171707"></script>
-<script src="./data/landmarks.js?v=202611171707"></script>
-<script src="./data/labels.js?v=202611171707"></script>
-<script src="./data/labels-detail.js?v=202611171707"></script>
-<script src="./data/build.js?v=202611171707"></script>
-<script src="./assets/js/core.js?v=202611171707"></script>
+<script src="./data/points.js?v=202611171710"></script>
+<script src="./data/landmarks.js?v=202611171710"></script>
+<script src="./data/labels.js?v=202611171710"></script>
+<script src="./data/labels-detail.js?v=202611171710"></script>
+<script src="./data/build.js?v=202611171710"></script>
+<script src="./assets/js/core.js?v=202611171710"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
@@ -130,9 +130,10 @@ let pointNodes = [];
 function zoomToScale(z) { return Math.pow(2, z - z0); }
 
 function tiersAt(s) {
-  if (s < 1.6) return [1];
-  if (s < 2.4) return [2];
-  return [2, 3];
+  if (s < 2) return [1];
+  if (s < 4) return [2];
+  if (s < 8) return [2, 3];
+  return [2, 3, 4];
 }
 
 function startOverlay() {
@@ -186,6 +187,7 @@ function renderOverlay() {
 
   for (const n of labelNodes) {
     if (want.indexOf(n.t) < 0) { n.el.style.display = 'none'; continue; }
+    if (placed.length >= 70) { n.el.style.display = 'none'; continue; }
 
     const p = map.project(n.ll);
     if (p.x < -100 || p.x > size.width + 100 || p.y < -30 || p.y > size.height + 30) {
@@ -195,7 +197,8 @@ function renderOverlay() {
 
     const w = n.el.textContent.length * (n.t === 1 ? 14 : 12) * 0.95;
     const h = n.t === 1 ? 17 : 14;
-    const box = { x1: p.x - w / 2, x2: p.x + w / 2, y1: p.y - h / 2, y2: p.y + h / 2 };
+    const pad = 3;
+    const box = { x1: p.x - w / 2 - pad, x2: p.x + w / 2 + pad, y1: p.y - h / 2 - pad, y2: p.y + h / 2 + pad };
 
     let hit = false;
     for (const b of placed) {
