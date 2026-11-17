@@ -43,16 +43,14 @@
 
   function sessionLabel(t) {
     if (!t || !t.sessionId) return '';
-    var d = new Date(t.startedAt);
-    if (isNaN(d)) return '本次测量未记录开始时间';
 
-    var time = pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    var parts = [];
+    if (t.leq != null) parts.push('分贝 ' + t.leq);
+    if (t.crowdCount != null) parts.push('人流 ' + t.crowdCount + ' 人');
+    if (t.quietMin != null) parts.push('安静空间 ' + t.quietMin + ' 分钟');
+    if (Array.isArray(t.windows) && t.windows.length) parts.push(t.windows.length + ' 个观察窗');
 
-    var hasData = t.leq != null || t.crowdCount != null || t.quietMin != null ||
-      (Array.isArray(t.windows) && t.windows.length);
-    if (!hasData) return '' + time + ' 开始，还没有测量数据';
-
-    return '本次测量 ' + time + ' 开始';
+    return parts.length ? '本会话已测：' + parts.join('、') : '本会话还没有测量';
   }
 
   var current = load();
