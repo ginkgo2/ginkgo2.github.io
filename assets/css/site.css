@@ -747,3 +747,6 @@ body[data-page="map"] .ml-shell { height: 74vh; }
 @media (prefers-color-scheme: dark) {
   .demo-banner { background: #3a3320; color: #e8d9a8; border-bottom-color: #55492a; }
 }
+/* 顶部和底部通栏：不随页面版心宽度变化而左右跳 */
+.site-head .wrap,
+.site-foot .wrap { max-width: none; }
