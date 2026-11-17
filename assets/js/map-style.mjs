@@ -112,9 +112,14 @@ export function addLayers(map, z0, data) {
   const zBldSmall = zoomForScale(map, 200);
   const zDark = zBldSmall;
 
+  // 渐变暂时关掉，先验证阈值（原来 500 米时是 #faf7f1，和背景 #f7f5f1 几乎同色）
+  // const bPaint = {
+  //   'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#faf7f1', zDark, '#e2ddcf'],
+  //   'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f2eee6', zDark, '#d2cbbb']
+  // };
   const bPaint = {
-    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#faf7f1', zDark, '#e2ddcf'],
-    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f2eee6', zDark, '#d2cbbb']
+    'fill-color': '#e8e3d8',
+    'fill-outline-color': '#dbd5c7'
   };
 
   map.addLayer({
