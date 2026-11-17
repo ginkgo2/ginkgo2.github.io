@@ -44,7 +44,15 @@
   function sessionLabel(t) {
     if (!t || !t.sessionId) return '';
     var d = new Date(t.startedAt);
-    return t.sessionId + ' · ' + (isNaN(d) ? '' : pad2(d.getHours()) + ':' + pad2(d.getMinutes()));
+    if (isNaN(d)) return '本次测量未记录开始时间';
+
+    var time = pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+
+    var hasData = t.leq != null || t.crowdCount != null || t.quietMin != null ||
+      (Array.isArray(t.windows) && t.windows.length);
+    if (!hasData) return '' + time + ' 开始，还没有测量数据';
+
+    return '本次测量 ' + time + ' 开始';
   }
 
   var current = load();
