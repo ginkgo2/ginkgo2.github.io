@@ -105,17 +105,17 @@ if (water.length) parts.push(`<g fill="#d5e7f0">${water.map(d => `<path d="${d}"
 if (parks.length) parts.push(`<g fill="#dfeada">${parks.map(d => `<path d="${d}"/>`).join('')}</g>`);
 
 const ROAD_STYLE = {
-  motorway: { w: 4.6, fill: '#f0c469', casing: '#d9a94f' },
-  trunk: { w: 4.0, fill: '#f4d28a', casing: '#dcb768' },
-  primary: { w: 3.2, fill: '#fbe6bd', casing: '#d8c39a' },
-  secondary: { w: 2.4, fill: '#ffffff', casing: '#d6cfc1' },
-  tertiary: { w: 1.7, fill: '#ffffff', casing: '#ddd6c9' }
+  motorway: { w: 3.8, fill: '#efc469', casing: '#dcb877' },
+  trunk: { w: 3.3, fill: '#f3d39a', casing: '#ddc49a' },
+  primary: { w: 2.6, fill: '#fbe7c2', casing: '#ddd0b6' },
+  secondary: { w: 1.9, fill: '#ffffff', casing: '#ded8cc' },
+  tertiary: { w: 1.3, fill: '#ffffff', casing: '#e6e1d7' }
 };
 const order = ['tertiary', 'secondary', 'primary', 'trunk', 'motorway'];
 for (const cls of order) {
   const st = ROAD_STYLE[cls];
   if (!roads[cls].length) continue;
-  parts.push(`<g fill="none" stroke="${st.casing}" stroke-width="${st.w + 2.2}" stroke-linecap="round" stroke-linejoin="round">` +
+  parts.push(`<g fill="none" stroke="${st.casing}" stroke-width="${st.w + 1.1}" stroke-linecap="round" stroke-linejoin="round">` +
     roads[cls].map(r => `<path d="${r.d}"/>`).join('') + '</g>');
 }
 for (const cls of order) {

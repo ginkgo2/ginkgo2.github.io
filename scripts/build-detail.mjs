@@ -80,13 +80,13 @@ parts.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" widt
 parts.push('<title>细节层：小路、建筑、门</title>');
 
 if (buildings.length) {
-  parts.push('<g fill="#e7e2d7">' + buildings.map(d => `<path d="${d}"/>`).join('') + '</g>');
+  parts.push('<g fill="#eae5db">' + buildings.map(d => `<path d="${d}"/>`).join('') + '</g>');
 }
 
 if (roads.length) {
-  parts.push('<g fill="none" stroke="#d7d1c4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+  parts.push('<g fill="none" stroke="#e0dbd0" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
     roads.map(d => `<path d="${d}"/>`).join('') + '</g>');
-  parts.push('<g fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+  parts.push('<g fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">' +
     roads.map(d => `<path d="${d}"/>`).join('') + '</g>');
 }
 
