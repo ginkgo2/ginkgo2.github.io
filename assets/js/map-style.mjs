@@ -20,11 +20,28 @@ export function toXY(lng, lat) {
 
 export const BOUNDS = [[BBOX.w, BBOX.s], [BBOX.e, BBOX.n]];
 
-const LAT0 = (BBOX.s + BBOX.n) / 2;
+const R = 6378137;
 
-// 比例尺显示某个米数时对应的缩放级别（MapLibre 比例尺按 1 米/像素 ≈ 100 米）
-export function zoomForMetersPerPixel(mpp) {
-  return Math.log2(156543.03392 * Math.cos(LAT0 * Math.PI / 180) / mpp);
+function haversine(a, b) {
+  const dLat = (b.lat - a.lat) * Math.PI / 180;
+  const dLng = (b.lng - a.lng) * Math.PI / 180;
+  const la1 = a.lat * Math.PI / 180;
+  const la2 = b.lat * Math.PI / 180;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+// 用地图自身的投影量出“当前 1 像素多少米”，不依赖瓦片尺寸常数
+function metersPerPixel(map) {
+  const c = map.getCenter();
+  const p = map.project(c);
+  const q = map.unproject([p.x + 100, p.y]);
+  return haversine(c, q) / 100;
+}
+
+// 比例尺显示 meters 米时对应的缩放级别（比例尺条按 100 像素算）
+export function zoomForScale(map, meters) {
+  return map.getZoom() + Math.log2(metersPerPixel(map) / (meters / 100));
 }
 
 export function emptyStyle() {
@@ -90,9 +107,9 @@ export function addLayers(map, z0, data) {
   });
 
   // 建筑：按比例尺分档出现，颜色随比例尺由浅变深（300 米时最浅，100 米时恢复正常）
-  const zBldBig = zoomForMetersPerPixel(5);    // 比例尺约 500 米
-  const zBldMid = zoomForMetersPerPixel(3);    // 约 300 米
-  const zBldSmall = zoomForMetersPerPixel(2);  // 约 200 米
+  const zBldBig = zoomForScale(map, 500);
+  const zBldMid = zoomForScale(map, 300);
+  const zBldSmall = zoomForScale(map, 200);
   const zDark = zBldSmall;
 
   const bPaint = {
