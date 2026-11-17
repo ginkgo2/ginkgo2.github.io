@@ -91,8 +91,8 @@ export function addLayers(map, z0, data) {
 
   // 建筑：按比例尺分档出现，颜色随比例尺由浅变深（300 米时最浅，100 米时恢复正常）
   const zBldBig = zoomForMetersPerPixel(3);    // 比例尺约 300 米
-  const zBldMid = zoomForMetersPerPixel(1.6);  // 约 160 米
-  const zBldSmall = zoomForMetersPerPixel(1);  // 约 100 米
+  const zBldMid = zoomForMetersPerPixel(2);    // 约 200 米
+  const zBldSmall = zoomForMetersPerPixel(1.4); // 约 140 米
   const zDark = zBldSmall;
 
   const bPaint = {
