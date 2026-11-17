@@ -833,3 +833,16 @@ body[data-page="map"] .wrap {
     padding-right: 16px;
   }
 }
+/* 地图页留出明显的页边距 */
+body[data-page="map"] { --wrap: 1440px; }
+body[data-page="map"] .wrap {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+@media (max-width: 760px) {
+  body[data-page="map"] { --wrap: 100%; }
+  body[data-page="map"] .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
