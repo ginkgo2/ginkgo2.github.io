@@ -2,7 +2,7 @@
 
 线上地址 https://ginkgo2.github.io/
 
-![清单示例](assets/img/demo-list.png)
+<img src="assets/img/demo-list.png" alt="清单示例" width="760">
 
 海港区公共场所的感官友好评估。六项观察，四项定级，按最弱的一项定级，不取平均。公开版只放推荐和有条件推荐，不推荐的点位不点名。
 
