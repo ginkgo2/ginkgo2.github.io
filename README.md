@@ -1,6 +1,8 @@
 # 感官友好评估 · 海港区
 
-线上地址 https://ginkgo2.github.io/，网址后加 `?demo=1` 可以看示例数据。
+线上地址 https://ginkgo2.github.io/
+
+![清单示例](assets/img/demo-list.png)
 
 海港区公共场所的感官友好评估。六项观察，四项定级，按最弱的一项定级，不取平均。公开版只放推荐和有条件推荐，不推荐的点位不点名。
 
@@ -9,9 +11,9 @@
 ## 技术栈
 
 - 原生 HTML、CSS、JS，无框架、无构建、无后端
-- 数据写在 `data/points.js` 里，页面不需要接口
+- 数据写在 `data/points.js` 里
 - 地图用 MapLibre，底图由 OSM 数据用脚本生成
-- 静态托管，GitHub Pages 就行
+- GitHub Pages 之类的静态托管
 
 ## 本地看
 
