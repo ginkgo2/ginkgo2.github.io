@@ -122,14 +122,14 @@ export function addLayers(map, z0, data) {
 
   // 建筑：按比例尺分档出现，颜色随比例尺由浅变深（300 米时最浅，100 米时恢复正常）
   const zBldBig = zoomForScale(map, 500);
-  const zBldMid = zoomForScale(map, 300);
-  const zBldSmall = zoomForScale(map, 200);
+  const zBldMid = zoomForScale(map, 200);
+  const zBldSmall = zoomForScale(map, 100);
   const zDark = zBldSmall;
 
   // 颜色随比例尺由浅变深：500 米时最浅，200 米时恢复正常
   const bPaint = {
-    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f0ece3', zBldMid, '#f7f5f1', zDark, '#e2ddcf'],
-    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#e6e1d7', zBldMid, '#f4f1eb', zDark, '#d2cbbb']
+    'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f0ece3', zBldMid, '#eeeadf', zDark, '#e2ddcf'],
+    'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#e6e1d7', zBldMid, '#e4dfd4', zDark, '#d2cbbb']
   };
 
   map.addLayer({
