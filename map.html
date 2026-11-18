@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182319">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611182319">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182322">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611182322">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611182319">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611182322">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611182319">清单</a>
-      <a href="./map.html?v=202611182319" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611182319">工具箱</a>
-      <a href="./assess.html?v=202611182319">评估</a>
-      <a href="./method.html?v=202611182319">方法</a>
-      <a href="./data.html?v=202611182319">数据</a>
+      <a href="./list.html?v=202611182322">清单</a>
+      <a href="./map.html?v=202611182322" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611182322">工具箱</a>
+      <a href="./assess.html?v=202611182322">评估</a>
+      <a href="./method.html?v=202611182322">方法</a>
+      <a href="./data.html?v=202611182322">数据</a>
     </nav>
   </div>
 </header>
@@ -77,17 +77,17 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611182319"></script>
-<script src="./data/demo-points.js?v=202611182319"></script>
-<script src="./data/landmarks.js?v=202611182319"></script>
-<script src="./data/labels.js?v=202611182319"></script>
-<script src="./data/labels-detail.js?v=202611182319"></script>
-<script src="./data/build.js?v=202611182319"></script>
-<script src="./assets/js/core.js?v=202611182319"></script>
+<script src="./data/points.js?v=202611182322"></script>
+<script src="./data/demo-points.js?v=202611182322"></script>
+<script src="./data/landmarks.js?v=202611182322"></script>
+<script src="./data/labels.js?v=202611182322"></script>
+<script src="./data/labels-detail.js?v=202611182322"></script>
+<script src="./data/build.js?v=202611182322"></script>
+<script src="./assets/js/core.js?v=202611182322"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
-import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182319';
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182322';
 
 const SF = window.SF;
 
@@ -187,6 +187,9 @@ function startOverlay() {
       el.type = 'button';
       el.className = 'ml-pin ' + (p.level === 'recommended' ? 'ok' : 'warn');
       el.title = p.name;
+      el.innerHTML = p.level === 'recommended'
+        ? '<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C5.9 1 1 5.9 1 12c0 8.6 11 19 11 19s11-10.4 11-19C23 5.9 18.1 1 12 1z"/><circle cx="12" cy="12" r="4.6" fill="#fff"/></svg>'
+        : '<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C5.9 1 1 5.9 1 12c0 8.6 11 19 11 19s11-10.4 11-19C23 5.9 18.1 1 12 1z"/><path d="M12 7.6l4.6 8H7.4z" fill="#fff"/></svg>';
       el.addEventListener('click', () => { showCard(p); showPopup(p, ll); });
       layer.appendChild(el);
       const ll = (p.lng != null && p.lat != null) ? [Number(p.lng), Number(p.lat)] : toLngLat(Number(p.x), Number(p.y));
@@ -259,7 +262,7 @@ let popup = null;
 
 function showPopup(p, ll) {
   if (!popup) {
-    popup = new maplibregl.Popup({ offset: 16, closeButton: true, maxWidth: '300px', className: 'sf-popup' });
+    popup = new maplibregl.Popup({ offset: 30, closeButton: true, maxWidth: '300px', className: 'sf-popup' });
   }
   const lv = SF.LEVELS[p.level] || SF.LEVELS.no_data;
   const rows = SF.DIMS.map(function (d) {

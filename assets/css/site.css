@@ -887,3 +887,28 @@ p { margin: 0 0 var(--sp-3); }
 }
 /* 弹窗要盖在名称层之上 */
 .maplibregl-popup { z-index: 8; }
+/* 水滴形点位：尖端对准坐标 */
+.ml-pin {
+  position: absolute;
+  width: 20px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .28));
+}
+.ml-pin svg { display: block; width: 100%; height: 100%; }
+.ml-pin.ok svg path:first-child { fill: #2f6f4a; }
+.ml-pin.warn svg path:first-child { fill: #8a6412; }
+.ml-pin.ok:hover svg path:first-child { fill: #245a3b; }
+.ml-pin.warn:hover svg path:first-child { fill: #6f4f0c; }
+/* 覆盖旧圆点样式，避免水滴背后露出方块底色 */
+.ml-pin.ok,
+.ml-pin.warn {
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
