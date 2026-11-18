@@ -77,5 +77,21 @@ const write = (name, feats) => {
   console.log(name, feats.length, '个要素', (fs.statSync(out).size / 1024).toFixed(0) + 'KB');
 };
 
-write('map-base.geojson', base);
-write('map-detail.geojson', detail);
+// 底图拆成面要素与道路两块，前端并行拉取
+write('map-base-area.geojson', base.filter(f => f.properties.kind !== 'road'));
+write('map-base-road.geojson', base.filter(f => f.properties.kind === 'road'));
+
+// 细节层：建筑按经度四分，小路和门单独一块
+const bld = detail.filter(f => f.properties.kind === 'building');
+const other = detail.filter(f => f.properties.kind !== 'building');
+const lons = bld.map(f => f.geometry.coordinates[0][0][0]);
+const minLon = Math.min(...lons);
+const maxLon = Math.max(...lons);
+const step = (maxLon - minLon) / 4;
+const quads = [[], [], [], []];
+for (const f of bld) {
+  const lon = f.geometry.coordinates[0][0][0];
+  quads[Math.min(3, Math.max(0, Math.floor((lon - minLon) / step)))].push(f);
+}
+quads.forEach((q, i) => write('map-detail-b' + (i + 1) + '.geojson', q));
+write('map-detail-other.geojson', other);

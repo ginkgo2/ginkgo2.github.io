@@ -185,16 +185,20 @@
     var min = vals.length ? Math.min.apply(null, vals) : null;
     var uniqueMin = min != null && vals.filter(function (v) { return v === min; }).length === 1;
 
+    // 非线性刻度：4 分和 5 分在长度上拉开，减少"看起来都一样"的问题
+    var PCT = { 1: 9, 2: 24, 3: 44, 4: 70, 5: 100 };
+
     return '<ul class="bars">' + DIMS.map(function (d) {
       var raw = scores[d.id];
       var v = raw == null ? null : Number(raw);
       var cls = v == null ? 'none' : v <= 2 ? 'bad' : v === 3 ? 'warn' : 'ok';
       var weak = uniqueMin && v === min ? ' is-weak' : '';
-      var pct = v == null ? 0 : v / 5 * 100;
+      var pct = v == null ? 0 : (PCT[v] || 0);
 
       return '<li class="bar-row' + weak + '">' +
         '<span class="bar-label">' + esc(d.name) + '</span>' +
-        '<span class="bar-track"><span class="bar-fill fill-' + cls + '" style="width:' + pct + '%"></span></span>' +
+        '<span class="bar-track"><span class="bar-mark" aria-hidden="true"></span>' +
+        '<span class="bar-fill fill-' + cls + '" style="width:' + pct + '%"></span></span>' +
         '<span class="bar-score">' + (v == null ? '—' : v) + '</span>' +
         '</li>';
     }).join('') + '</ul>';

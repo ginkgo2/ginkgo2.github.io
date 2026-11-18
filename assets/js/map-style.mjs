@@ -66,13 +66,32 @@ export function emptyStyle() {
   };
 }
 
-export async function loadBase() {
-  return fetch('./data/map-base.geojson').then(r => r.json());
+// 分块并行拉取，再合并成一个 FeatureCollection
+async function fetchParts(urls) {
+  const parts = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+  const features = [];
+  for (const p of parts) {
+    for (const f of p.features) features.push(f);
+  }
+  return { type: 'FeatureCollection', features };
 }
 
-// 细节层较大，按需加载
+export async function loadBase() {
+  return fetchParts([
+    './data/map-base-area.geojson',
+    './data/map-base-road.geojson'
+  ]);
+}
+
+// 细节层较大，按需加载，五个分块并行
 export async function loadDetail() {
-  return fetch('./data/map-detail.geojson').then(r => r.json());
+  return fetchParts([
+    './data/map-detail-b1.geojson',
+    './data/map-detail-b2.geojson',
+    './data/map-detail-b3.geojson',
+    './data/map-detail-b4.geojson',
+    './data/map-detail-other.geojson'
+  ]);
 }
 
 export function addBaseLayers(map, z0, base) {

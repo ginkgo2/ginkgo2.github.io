@@ -838,3 +838,40 @@ p { margin: 0 0 var(--sp-3); }
 }
 .pk-label.t1 { font-size: 12px; font-weight: 600; color: #3f3f3b; }
 .pk-label.t4 { font-size: 10px; color: #6f6e68; }
+/* 地图加载提示与点位弹窗 */
+.map-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  color: var(--muted);
+  font-size: .9375rem;
+  pointer-events: none;
+  z-index: 1;
+}
+.sf-popup .maplibregl-popup-content {
+  background: var(--surface);
+  color: var(--ink);
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .18);
+  border: 1px solid var(--line);
+}
+.sf-popup .maplibregl-popup-tip { border-top-color: var(--surface); }
+.pop-in strong { display: block; font-size: 1rem; margin-bottom: 6px; }
+.pop-dims { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: .8125rem; color: var(--ink-2); }
+.pop-dim b { margin-left: 3px; color: var(--ink); }
+.pop-note { margin: 8px 0 0; font-size: .8125rem; color: var(--muted); line-height: 1.5; }
+/* 分条的非线性刻度：70% 处是"推荐"分界 */
+.bar-track { position: relative; }
+.bar-mark {
+  position: absolute;
+  left: 70%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--line-2);
+  opacity: .8;
+  pointer-events: none;
+}
