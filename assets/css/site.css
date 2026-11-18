@@ -875,3 +875,15 @@ p { margin: 0 0 var(--sp-3); }
   opacity: .8;
   pointer-events: none;
 }
+/* 静态底图占位：MapLibre 就绪前先显示 */
+.map-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+/* 弹窗要盖在名称层之上 */
+.maplibregl-popup { z-index: 8; }
