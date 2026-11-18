@@ -132,10 +132,15 @@
             n.el.style.top = pt.y + 'px';
           }
         }
-        function schedulePkLabels() { if (!lraf) lraf = requestAnimationFrame(renderPkLabels); }
+        function schedulePkLabels() {
+          if (lraf) return;
+          lraf = setTimeout(function () { lraf = 0; renderPkLabels(); }, 16);
+        }
         map.on('move', schedulePkLabels);
         map.on('zoom', schedulePkLabels);
         map.on('resize', schedulePkLabels);
+        map.on('moveend', renderPkLabels);
+        map.on('zoomend', renderPkLabels);
         map.on('idle', schedulePkLabels);
         renderPkLabels();
         // 容器刚显示时尺寸可能还没稳定，多补几次重排

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182325">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611182325">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182329">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611182329">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611182325">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611182329">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611182325">清单</a>
-      <a href="./map.html?v=202611182325" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611182325">工具箱</a>
-      <a href="./assess.html?v=202611182325">评估</a>
-      <a href="./method.html?v=202611182325">方法</a>
-      <a href="./data.html?v=202611182325">数据</a>
+      <a href="./list.html?v=202611182329">清单</a>
+      <a href="./map.html?v=202611182329" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611182329">工具箱</a>
+      <a href="./assess.html?v=202611182329">评估</a>
+      <a href="./method.html?v=202611182329">方法</a>
+      <a href="./data.html?v=202611182329">数据</a>
     </nav>
   </div>
 </header>
@@ -77,17 +77,17 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611182325"></script>
-<script src="./data/demo-points.js?v=202611182325"></script>
-<script src="./data/landmarks.js?v=202611182325"></script>
-<script src="./data/labels.js?v=202611182325"></script>
-<script src="./data/labels-detail.js?v=202611182325"></script>
-<script src="./data/build.js?v=202611182325"></script>
-<script src="./assets/js/core.js?v=202611182325"></script>
+<script src="./data/points.js?v=202611182329"></script>
+<script src="./data/demo-points.js?v=202611182329"></script>
+<script src="./data/landmarks.js?v=202611182329"></script>
+<script src="./data/labels.js?v=202611182329"></script>
+<script src="./data/labels-detail.js?v=202611182329"></script>
+<script src="./data/build.js?v=202611182329"></script>
+<script src="./assets/js/core.js?v=202611182329"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
-import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182325';
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182329';
 
 const SF = window.SF;
 
@@ -200,21 +200,38 @@ function startOverlay() {
       return { el, ll, p };
     });
 
-  map.on('move', scheduleOverlay);
-  map.on('zoom', scheduleOverlay);
-  map.on('resize', scheduleOverlay);
+  map.on('move', function () { renderPins(); scheduleOverlay(); });
+  map.on('zoom', function () { renderPins(); scheduleOverlay(); });
+  map.on('moveend', function () { renderPins(); renderOverlay(); });
+  map.on('zoomend', function () { renderPins(); renderOverlay(); });
+  map.on('resize', function () { renderPins(); renderOverlay(); });
   scheduleOverlay();
 
   if (!points.length) empty.hidden = false;
 }
 
-let raf = 0;
+let overlayTimer = 0;
 function scheduleOverlay() {
-  if (!raf) raf = requestAnimationFrame(renderOverlay);
+  if (overlayTimer) return;
+  overlayTimer = setTimeout(function () { overlayTimer = 0; renderOverlay(); }, 16);
+}
+
+// 点位很少，直接跟随地图同步更新，避免拖动/缩放时落后于底图
+function renderPins() {
+  if (!pointNodes.length) return;
+  const s = zoomToScale(map.getZoom());
+  for (const n of pointNodes) {
+    const p = map.project(n.ll);
+    const visible = showAllPoints || s >= 1.6 || n.p.level === 'recommended' || !hasRecommended;
+    if (!visible) { n.el.style.display = 'none'; continue; }
+    n.el.style.display = '';
+    n.el.style.left = p.x + 'px';
+    n.el.style.top = p.y + 'px';
+  }
 }
 
 function renderOverlay() {
-  raf = 0;
+  overlayTimer = 0;
   const size = map.getCanvas().getBoundingClientRect();
   const s = zoomToScale(map.getZoom());
   const want = tiersAt(s);
@@ -247,14 +264,7 @@ function renderOverlay() {
     n.el.style.top = p.y + 'px';
   }
 
-  for (const n of pointNodes) {
-    const p = map.project(n.ll);
-    const visible = showAllPoints || s >= 1.6 || n.p.level === 'recommended' || !hasRecommended;
-    if (!visible) { n.el.style.display = 'none'; continue; }
-    n.el.style.display = '';
-    n.el.style.left = p.x + 'px';
-    n.el.style.top = p.y + 'px';
-  }
+  renderPins();
 }
 
 function updateLegend() {
