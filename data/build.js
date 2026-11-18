@@ -1,2 +1,2 @@
-window.SF_VERSION = 'v1.1.5';
-window.SF_BUILD = '2026-11-17 18:55';
+window.SF_VERSION = 'v1.2.0';
+window.SF_BUILD = '2026-11-18 22:38';
