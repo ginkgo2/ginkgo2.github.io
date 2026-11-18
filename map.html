@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182322">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611182322">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611182325">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611182325">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611182322">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611182325">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611182322">清单</a>
-      <a href="./map.html?v=202611182322" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611182322">工具箱</a>
-      <a href="./assess.html?v=202611182322">评估</a>
-      <a href="./method.html?v=202611182322">方法</a>
-      <a href="./data.html?v=202611182322">数据</a>
+      <a href="./list.html?v=202611182325">清单</a>
+      <a href="./map.html?v=202611182325" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611182325">工具箱</a>
+      <a href="./assess.html?v=202611182325">评估</a>
+      <a href="./method.html?v=202611182325">方法</a>
+      <a href="./data.html?v=202611182325">数据</a>
     </nav>
   </div>
 </header>
@@ -77,17 +77,17 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611182322"></script>
-<script src="./data/demo-points.js?v=202611182322"></script>
-<script src="./data/landmarks.js?v=202611182322"></script>
-<script src="./data/labels.js?v=202611182322"></script>
-<script src="./data/labels-detail.js?v=202611182322"></script>
-<script src="./data/build.js?v=202611182322"></script>
-<script src="./assets/js/core.js?v=202611182322"></script>
+<script src="./data/points.js?v=202611182325"></script>
+<script src="./data/demo-points.js?v=202611182325"></script>
+<script src="./data/landmarks.js?v=202611182325"></script>
+<script src="./data/labels.js?v=202611182325"></script>
+<script src="./data/labels-detail.js?v=202611182325"></script>
+<script src="./data/build.js?v=202611182325"></script>
+<script src="./assets/js/core.js?v=202611182325"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
-import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182322';
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611182325';
 
 const SF = window.SF;
 
@@ -128,6 +128,10 @@ map.on('load', async () => {
   startOverlay();
   updateLegend();
   initSearch();
+
+  // 底图就绪后再显示点位与名称，避免和静态占位图错位
+  var overlayEl = document.querySelector('.ml-overlay');
+  if (overlayEl) overlayEl.classList.add('is-ready');
 
   // 细节层体积大，放大到一定程度才取
   let detailAdded = false;

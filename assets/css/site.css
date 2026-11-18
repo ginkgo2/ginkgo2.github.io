@@ -696,19 +696,6 @@ td code, th code { font-size: .875rem; background: var(--surface-2); padding: 1p
 .ml-lbl.t1 { font-size: 13px; color: #3f3f3b; font-weight: 600; }
 .ml-lbl.t3 { color: #3f3f3b; }
 
-.ml-pin {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #2f6f4a;
-  cursor: pointer;
-  pointer-events: auto;
-}
-.ml-pin.warn { background: #8a6412; border-radius: 3px; }
 .map-wrap .map-tools { top: 10px; right: 10px; }
 /* ---------- 地图页加宽、按钮改到左上 ---------- */
 
@@ -912,3 +899,8 @@ p { margin: 0 0 var(--sp-3); }
   border: 0;
   border-radius: 0;
 }
+.ml-overlay {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.ml-overlay.is-ready { opacity: 1; }
