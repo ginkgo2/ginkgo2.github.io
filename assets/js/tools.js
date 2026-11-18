@@ -295,17 +295,15 @@
       crowdCount: cw.count,
       crowdSec: sec,
       crowdDone: sec >= 300,
-      queueMin: numOrNull($('cw-queue').value),
       peakInRoom: numOrNull($('cw-peak').value)
     });
     $('cw-timer').textContent = mmss(sec * 1000);
     if (sec < 300) $('cw-timer').textContent += '（未满 5 分钟）';
   }
 
-  ['cw-queue', 'cw-peak'].forEach(function (id) {
+  ['cw-peak'].forEach(function (id) {
     $(id).addEventListener('change', function () {
       save({
-        queueMin: numOrNull($('cw-queue').value),
         peakInRoom: numOrNull($('cw-peak').value)
       });
     });
@@ -386,7 +384,6 @@
     $('cw-count').textContent = '0';
     $('cw-rate').textContent = '—';
     $('cw-timer').textContent = '05:00';
-    $('cw-queue').value = '';
     $('cw-peak').value = '';
     $('qt-time').textContent = '00:00';
     $('qt-msg').textContent = '';
@@ -402,7 +399,6 @@
     if (t.lmax != null) $('db-max').textContent = t.lmax;
     if (t.crowdCount != null) $('cw-count').textContent = t.crowdCount;
     if (t.crowdSec != null) $('cw-timer').textContent = mmss(t.crowdSec * 1000);
-    if (t.queueMin != null) $('cw-queue').value = t.queueMin;
     if (t.peakInRoom != null) $('cw-peak').value = t.peakInRoom;
     if (t.quietSec != null) $('qt-time').textContent = mmss(t.quietSec * 1000);
     renderEvents();

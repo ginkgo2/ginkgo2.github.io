@@ -820,3 +820,21 @@ p { margin: 0 0 var(--sp-3); }
 .card > h2:first-child { margin-top: 0; }
 .card > h2 { margin-top: var(--sp-5); }
 
+
+/* 选点器名称叠层 */
+.pk-label-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.pk-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: 11px;
+  color: #5f5e59;
+  text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+}
+.pk-label.t1 { font-size: 12px; font-weight: 600; color: #3f3f3b; }
+.pk-label.t4 { font-size: 10px; color: #6f6e68; }

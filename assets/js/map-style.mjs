@@ -66,18 +66,17 @@ export function emptyStyle() {
   };
 }
 
-export async function loadData() {
-  const [base, detail] = await Promise.all([
-    fetch('./data/map-base.geojson').then(r => r.json()),
-    fetch('./data/map-detail.geojson').then(r => r.json())
-  ]);
-  return { base, detail };
+export async function loadBase() {
+  return fetch('./data/map-base.geojson').then(r => r.json());
 }
 
-// 加入所有图层。z0 为初始适配缩放，建筑按面积分档
-export function addLayers(map, z0, data) {
-  map.addSource('base', { type: 'geojson', data: data.base });
-  map.addSource('detail', { type: 'geojson', data: data.detail });
+// 细节层较大，按需加载
+export async function loadDetail() {
+  return fetch('./data/map-detail.geojson').then(r => r.json());
+}
+
+export function addBaseLayers(map, z0, base) {
+  map.addSource('base', { type: 'geojson', data: base });
 
   map.addLayer({ id: 'water', type: 'fill', source: 'base', filter: ['==', ['get', 'kind'], 'water'], paint: { 'fill-color': '#d5e7f0' } });
   map.addLayer({ id: 'park', type: 'fill', source: 'base', filter: ['==', ['get', 'kind'], 'park'], paint: { 'fill-color': '#dfeada' } });
@@ -106,6 +105,10 @@ export function addLayers(map, z0, data) {
       }
     });
   }
+}
+
+export function addDetailLayers(map, z0, detail) {
+  map.addSource('detail', { type: 'geojson', data: detail });
 
   map.addLayer({
     id: 'minor-casing', type: 'line', source: 'detail', minzoom: z0 + 1.6,
@@ -120,13 +123,11 @@ export function addLayers(map, z0, data) {
     paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], z0 + 1.4, 1.0, z0 + 5, 2.4] }
   });
 
-  // 建筑：按比例尺分档出现，颜色随比例尺由浅变深（300 米时最浅，100 米时恢复正常）
   const zBldBig = zoomForScale(map, 500);
   const zBldMid = zoomForScale(map, 200);
   const zBldSmall = zoomForScale(map, 100);
   const zDark = zBldSmall;
 
-  // 颜色随比例尺由浅变深：500 米时最浅，200 米时恢复正常
   const bPaint = {
     'fill-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#f0ece3', zBldMid, '#eeeadf', zDark, '#e2ddcf'],
     'fill-outline-color': ['interpolate', ['linear'], ['zoom'], zBldBig, '#e6e1d7', zBldMid, '#e4dfd4', zDark, '#d2cbbb']

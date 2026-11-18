@@ -246,7 +246,6 @@
     if (t.crowdCount != null) {
       parts.push((t.crowdDone ? '5 分钟 ' : '观察 ' + (t.crowdSec || 0) + ' 秒 ') + t.crowdCount + ' 人');
     }
-    if (t.queueMin != null) parts.push('排队 ' + t.queueMin + ' 分钟');
     if (t.quietMin != null) parts.push('安静空间 ' + t.quietMin + ' 分钟');
     if (Array.isArray(t.windows) && t.windows.length) parts.push(t.windows.length + ' 个观察窗');
     note.textContent = parts.length ? '已带入工具箱：' + parts.join('、') : '';
@@ -275,13 +274,6 @@
       s = t.crowdCount < 10 ? 5 : t.crowdCount <= 25 ? 4 : t.crowdCount <= 45 ? 3 : t.crowdCount <= 60 ? 2 : 1;
       why = t.crowdCount + ' 人/5 分钟';
 
-      if (t.queueMin != null && t.queueMin > 10) {
-        s = 1;
-        why += '，排队 ' + t.queueMin + ' 分钟';
-      } else if (t.queueMin != null && t.queueMin > 3 && s > 2) {
-        s = 2;
-        why += '，排队 ' + t.queueMin + ' 分钟';
-      }
       if (t.peakInRoom != null && t.peakInRoom >= 15 && s > 2) {
         s = 2;
         why += '，同时停留 ' + t.peakInRoom + ' 人';

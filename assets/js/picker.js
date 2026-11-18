@@ -49,12 +49,99 @@
         pitchWithRotate: false
       });
       map.__ml = ml;
+      host.__map = map;
 
       map.addControl(new ml.NavigationControl({ showCompass: false }), 'top-right');
 
       map.on('load', async function () {
-        var data = await st.loadData();
-        st.addLayers(map, map.getZoom(), data);
+        var fitZoom = map.getZoom();
+        var base = await st.loadBase();
+        st.addBaseLayers(map, fitZoom, base);
+
+        var detailAdded = false;
+        var detailLoading = false;
+        async function ensureDetail() {
+          if (detailAdded || detailLoading) return;
+          detailLoading = true;
+          try {
+            var detail = await st.loadDetail();
+            st.addDetailLayers(map, map.getZoom(), detail);
+            detailAdded = true;
+          } finally {
+            detailLoading = false;
+          }
+        }
+        map.on('zoom', function () {
+          if (!detailAdded && map.getZoom() >= fitZoom + 1.2) ensureDetail();
+        });
+
+        // 名称叠层：跟地图投影走，做简单避让
+        var labelLayer = document.createElement('div');
+        labelLayer.className = 'pk-label-layer';
+        host.appendChild(labelLayer);
+
+        var allLabels = (window.SF_LABELS || []).concat(window.SF_LABELS_DETAIL || []);
+        var labelNodes = allLabels.map(function (l) {
+          var el = document.createElement('span');
+          el.className = 'pk-label t' + l.t;
+          el.textContent = l.n;
+          el.style.display = 'none';
+          labelLayer.appendChild(el);
+          return { el: el, ll: st.toLngLat(l.x, l.y), t: l.t };
+        });
+
+        function pkTiers(s) {
+          if (s < 2) return [1];
+          if (s < 4) return [2];
+          if (s < 8) return [2, 3];
+          return [2, 3, 4];
+        }
+
+        var lraf = 0;
+        function renderPkLabels() {
+          lraf = 0;
+          var size = map.getCanvas().getBoundingClientRect();
+          var s = Math.pow(2, map.getZoom() - fitZoom);
+          var want = pkTiers(s);
+          var placed = [];
+
+          for (var i = 0; i < labelNodes.length; i++) {
+            var n = labelNodes[i];
+            if (want.indexOf(n.t) < 0) { n.el.style.display = 'none'; continue; }
+            if (placed.length >= 40) { n.el.style.display = 'none'; continue; }
+
+            var pt = map.project(n.ll);
+            if (pt.x < -60 || pt.x > size.width + 60 || pt.y < -20 || pt.y > size.height + 20) {
+              n.el.style.display = 'none';
+              continue;
+            }
+
+            var w = n.el.textContent.length * 11;
+            var h = 13;
+            var box = { x1: pt.x - w / 2, x2: pt.x + w / 2, y1: pt.y - h / 2, y2: pt.y + h / 2 };
+            var hit = false;
+            for (var j = 0; j < placed.length; j++) {
+              var b = placed[j];
+              if (box.x1 < b.x2 && box.x2 > b.x1 && box.y1 < b.y2 && box.y2 > b.y1) { hit = true; break; }
+            }
+            if (hit) { n.el.style.display = 'none'; continue; }
+
+            placed.push(box);
+            n.el.style.display = '';
+            n.el.style.left = pt.x + 'px';
+            n.el.style.top = pt.y + 'px';
+          }
+        }
+        function schedulePkLabels() { if (!lraf) lraf = requestAnimationFrame(renderPkLabels); }
+        map.on('move', schedulePkLabels);
+        map.on('zoom', schedulePkLabels);
+        map.on('resize', schedulePkLabels);
+        map.on('idle', schedulePkLabels);
+        renderPkLabels();
+        // 容器刚显示时尺寸可能还没稳定，多补几次重排
+        [0, 120, 400, 1000, 2000].forEach(function (d) {
+          setTimeout(function () { map.resize(); renderPkLabels(); }, d);
+        });
         applyValue();
 
         map.on('click', function (e) {
