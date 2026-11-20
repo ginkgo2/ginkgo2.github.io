@@ -905,3 +905,30 @@ p { margin: 0 0 var(--sp-3); }
   transition: opacity .2s ease;
 }
 .ml-overlay.is-ready { opacity: 1; }
+/* 手机端地图不要占满整屏 */
+@media (max-width: 760px) {
+  body[data-page="map"] .ml-shell {
+    height: 52vh;
+    min-height: 280px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1024px) {
+  body[data-page="map"] .ml-shell {
+    height: 62vh;
+  }
+}
+/* 手机端顶部导航换行，避免被截断 */
+@media (max-width: 760px) {
+  .head-inner {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+  .nav {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .nav a { padding: 5px 8px; }
+}
