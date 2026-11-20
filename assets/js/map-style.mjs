@@ -77,10 +77,23 @@ async function fetchParts(urls) {
 }
 
 export async function loadBase() {
-  return fetchParts([
+  const urls = [
     './data/map-base-area.geojson',
     './data/map-base-road.geojson'
-  ]);
+  ];
+
+  // 页面 head 里已经先发起了请求，这里直接复用，和库的下载并行
+  let parts = null;
+  if (typeof window !== 'undefined' && window.__sfBaseParts) {
+    try { parts = await Promise.all(window.__sfBaseParts); } catch (e) { parts = null; }
+  }
+  if (!parts) parts = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+
+  const features = [];
+  for (const p of parts) {
+    for (const f of p.features) features.push(f);
+  }
+  return { type: 'FeatureCollection', features };
 }
 
 // 细节层较大，按需加载，五个分块并行
