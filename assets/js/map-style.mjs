@@ -87,7 +87,7 @@ export async function loadBase() {
   if (typeof window !== 'undefined' && window.__sfBaseParts) {
     try { parts = await Promise.all(window.__sfBaseParts); } catch (e) { parts = null; }
   }
-  if (!parts) parts = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+  if (!parts) parts = await Promise.all(urls.map(u => fetch(u, { priority: 'high' }).then(r => r.json())));
 
   const features = [];
   for (const p of parts) {
