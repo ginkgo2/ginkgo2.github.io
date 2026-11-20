@@ -4,13 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611202006">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611202006">
-<link rel="modulepreload" href="assets/vendor/maplibre/maplibre-gl.mjs">
-<link rel="preload" as="script" href="assets/vendor/maplibre/maplibre-gl-worker.mjs">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611202009">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611202009">
 <script>
 /* 先把底图数据拉起来，和地图库并行，不用等库下载完 */
-window.__sfBaseParts = ["./data/map-base-area.geojson?v=202611202006", "./data/map-base-road.geojson?v=202611202006"].map(function (u) {
+window.__sfBaseParts = ["./data/map-base-area.geojson?v=202611202009", "./data/map-base-road.geojson?v=202611202009"].map(function (u) {
   return fetch(u, { priority: "high" }).then(function (r) { return r.json(); });
 });
 </script>
@@ -21,14 +19,14 @@ window.__sfBaseParts = ["./data/map-base-area.geojson?v=202611202006", "./data/m
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611202006">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611202009">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611202006">清单</a>
-      <a href="./map.html?v=202611202006" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611202006">工具箱</a>
-      <a href="./assess.html?v=202611202006">评估</a>
-      <a href="./method.html?v=202611202006">方法</a>
-      <a href="./data.html?v=202611202006">数据</a>
+      <a href="./list.html?v=202611202009">清单</a>
+      <a href="./map.html?v=202611202009" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611202009">工具箱</a>
+      <a href="./assess.html?v=202611202009">评估</a>
+      <a href="./method.html?v=202611202009">方法</a>
+      <a href="./data.html?v=202611202009">数据</a>
     </nav>
   </div>
 </header>
@@ -85,17 +83,18 @@ window.__sfBaseParts = ["./data/map-base-area.geojson?v=202611202006", "./data/m
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611202006"></script>
-<script src="./data/demo-points.js?v=202611202006"></script>
-<script src="./data/landmarks.js?v=202611202006"></script>
-<script src="./data/labels.js?v=202611202006"></script>
-<script src="./data/labels-detail.js?v=202611202006"></script>
-<script src="./data/build.js?v=202611202006"></script>
-<script src="./assets/js/core.js?v=202611202006"></script>
+<script src="./data/points.js?v=202611202009"></script>
+<script src="./data/demo-points.js?v=202611202009"></script>
+<script src="./data/landmarks.js?v=202611202009"></script>
+<script src="./data/labels.js?v=202611202009"></script>
+<script src="./data/labels-detail.js?v=202611202009"></script>
+<script src="./data/build.js?v=202611202009"></script>
+<script src="./assets/js/core.js?v=202611202009"></script>
 
+<script src="./assets/vendor/maplibre/maplibre-gl.js?v=202611202009"></script>
 <script type="module">
-import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
-import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611202006';
+const maplibregl = window.maplibregl;
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611202009';
 
 const SF = window.SF;
 

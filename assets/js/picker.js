@@ -33,9 +33,20 @@
 
     (async function () {
       var v = window.SF_VERSION ? '?v=' + encodeURIComponent(window.SF_VERSION) : '';
-      var mlUrl = new URL('../vendor/maplibre/maplibre-gl.mjs', SCRIPT_SRC).href + v;
       var stUrl = new URL('map-style.mjs', SCRIPT_SRC).href + v;
-      var ml = await import(mlUrl);
+
+      function loadUmd() {
+        if (window.maplibregl) return Promise.resolve(window.maplibregl);
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = new URL('../vendor/maplibre/maplibre-gl.js', SCRIPT_SRC).href + v;
+          s.onload = function () { resolve(window.maplibregl); };
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      var ml = await loadUmd();
       st = await import(stUrl);
 
       host.innerHTML = '';
