@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>地图 · 感官友好评估</title>
-<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611201957">
-<link rel="stylesheet" href="./assets/css/site.css?v=202611201957">
+<link rel="stylesheet" href="./assets/vendor/maplibre/maplibre-gl.css?v=202611202000">
+<link rel="stylesheet" href="./assets/css/site.css?v=202611202000">
 </head>
 <body data-page="map">
 
@@ -13,14 +13,14 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <a class="brand" href="./index.html?v=202611201957">感官友好评估</a>
+    <a class="brand" href="./index.html?v=202611202000">感官友好评估</a>
     <nav class="nav" aria-label="主导航">
-      <a href="./list.html?v=202611201957">清单</a>
-      <a href="./map.html?v=202611201957" aria-current="page">地图</a>
-      <a href="./tools.html?v=202611201957">工具箱</a>
-      <a href="./assess.html?v=202611201957">评估</a>
-      <a href="./method.html?v=202611201957">方法</a>
-      <a href="./data.html?v=202611201957">数据</a>
+      <a href="./list.html?v=202611202000">清单</a>
+      <a href="./map.html?v=202611202000" aria-current="page">地图</a>
+      <a href="./tools.html?v=202611202000">工具箱</a>
+      <a href="./assess.html?v=202611202000">评估</a>
+      <a href="./method.html?v=202611202000">方法</a>
+      <a href="./data.html?v=202611202000">数据</a>
     </nav>
   </div>
 </header>
@@ -77,17 +77,17 @@
   </div>
 </footer>
 
-<script src="./data/points.js?v=202611201957"></script>
-<script src="./data/demo-points.js?v=202611201957"></script>
-<script src="./data/landmarks.js?v=202611201957"></script>
-<script src="./data/labels.js?v=202611201957"></script>
-<script src="./data/labels-detail.js?v=202611201957"></script>
-<script src="./data/build.js?v=202611201957"></script>
-<script src="./assets/js/core.js?v=202611201957"></script>
+<script src="./data/points.js?v=202611202000"></script>
+<script src="./data/demo-points.js?v=202611202000"></script>
+<script src="./data/landmarks.js?v=202611202000"></script>
+<script src="./data/labels.js?v=202611202000"></script>
+<script src="./data/labels-detail.js?v=202611202000"></script>
+<script src="./data/build.js?v=202611202000"></script>
+<script src="./assets/js/core.js?v=202611202000"></script>
 
 <script type="module">
 import * as maplibregl from './assets/vendor/maplibre/maplibre-gl.mjs';
-import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611201957';
+import { BOUNDS, toLngLat, toXY, emptyStyle, loadBase, loadDetail, addBaseLayers, addDetailLayers } from './assets/js/map-style.mjs?v=202611202000';
 
 const SF = window.SF;
 
@@ -273,24 +273,47 @@ function updateLegend() {
 }
 
 let popup = null;
+let sheet = null;
 
-function showPopup(p, ll) {
-  if (!popup) {
-    popup = new maplibregl.Popup({ offset: 30, closeButton: true, maxWidth: '300px', className: 'sf-popup' });
-  }
+function infoHtml(p) {
   const lv = SF.LEVELS[p.level] || SF.LEVELS.no_data;
   const rows = SF.DIMS.map(function (d) {
     var v = p.scores && p.scores[d.id];
     return '<span class="pop-dim">' + SF.esc(d.name) + '<b>' + (v == null ? '—' : v) + '</b></span>';
   }).join('');
 
-  popup.setLngLat(ll)
-    .setHTML('<div class="pop-in"><strong>' + SF.esc(p.name) + '</strong>' +
-      '<span class="badge badge-' + lv.cls + '"><span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span>' +
-      '<div class="pop-dims">' + rows + '</div>' +
-      (p.note ? '<p class="pop-note">' + SF.esc(p.note) + '</p>' : '') +
-      '</div>')
-    .addTo(map);
+  return '<div class="pop-in"><strong>' + SF.esc(p.name) + '</strong>' +
+    '<span class="badge badge-' + lv.cls + '"><span class="glyph" aria-hidden="true">' + lv.glyph + '</span>' + lv.label + '</span>' +
+    '<div class="pop-dims">' + rows + '</div>' +
+    (p.note ? '<p class="pop-note">' + SF.esc(p.note) + '</p>' : '') +
+    '</div>';
+}
+
+function isNarrow() {
+  return window.matchMedia('(max-width: 760px)').matches;
+}
+
+function showPopup(p, ll) {
+  // 手机端用地图内底部卡片，避免弹窗被地图边界裁掉
+  if (isNarrow()) {
+    if (!sheet) {
+      sheet = document.createElement('div');
+      sheet.className = 'map-sheet';
+      sheet.hidden = true;
+      document.querySelector('.map-wrap').appendChild(sheet);
+      sheet.addEventListener('click', function (e) {
+        if (e.target.classList.contains('map-sheet-close')) sheet.hidden = true;
+      });
+    }
+    sheet.innerHTML = '<button type="button" class="map-sheet-close" aria-label="关闭">×</button>' + infoHtml(p);
+    sheet.hidden = false;
+    return;
+  }
+
+  if (!popup) {
+    popup = new maplibregl.Popup({ offset: 30, closeButton: true, maxWidth: '300px', className: 'sf-popup' });
+  }
+  popup.setLngLat(ll).setHTML(infoHtml(p)).addTo(map);
 }
 
 function showCard(p) {

@@ -932,3 +932,35 @@ p { margin: 0 0 var(--sp-3); }
   }
   .nav a { padding: 5px 8px; }
 }
+/* 手机端点位信息：地图内底部卡片，不被裁切 */
+.map-sheet {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 9;
+  max-height: 52%;
+  overflow: auto;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+}
+.map-sheet .pop-in strong { padding-right: 28px; }
+.map-sheet .pop-dims { gap: 6px 14px; }
+.map-sheet-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
